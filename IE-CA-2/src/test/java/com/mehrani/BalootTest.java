@@ -133,6 +133,5 @@ public class BalootTest {
     public void getBuyListTest() {
         String result = baloot.checkUserCmd("getBuyList {\"username\": \"user1\"}");
         assertEquals(result, "{\"success\":true,\"data\":{\"buyList\":[{\"id\":2,\"name\":\"Headphone\",\"providerId\":3,\"price\":35000,\"rating\":5.0}]}}");
-        System.out.println(result);
     }
 }

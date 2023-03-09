@@ -5,6 +5,7 @@ com/mehrani/Main.class
 com/mehrani/Error.class
 com/mehrani/Rating.class
 com/mehrani/Baloot.class
+com/mehrani/Comment.class
 com/mehrani/LocalDateAdapter.class
 com/mehrani/Response.class
 com/mehrani/User.class
