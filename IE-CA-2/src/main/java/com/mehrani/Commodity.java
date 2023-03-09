@@ -12,6 +12,7 @@ public class Commodity {
     private double rating;
     private int inStock;
     private int numOfRatings;
+    private ArrayList<Integer> comments = new ArrayList<>();
 
     Commodity(int id, String name, int providerId, int price, ArrayList<String> categories, double rating, int inStock) {
         this.id = id;
@@ -47,6 +48,9 @@ public class Commodity {
     public void setInStock(int inStock) {
         this.inStock = inStock;
     }
+    public void setComments(ArrayList<Integer> comments) {
+        this.comments = comments;
+    }
     public void reduceInStock(int amount) {
         this.inStock -= amount;
     }
@@ -56,6 +60,12 @@ public class Commodity {
     }
     public void updateRating(double previousRating, double newRating) {
         this.rating += ((newRating - previousRating)/numOfRatings);
+    }
+    public void addComment(int commentId) {
+        this.comments.add(commentId);
+    }
+    public void removeComment(int commentId) {
+        this.comments.remove(Integer.valueOf(commentId));
     }
     public int getId() {
         return id;
@@ -78,6 +88,9 @@ public class Commodity {
     public int getInStock() {
         return inStock;
     }
+    public ArrayList<Integer> getComments() {
+        return comments;
+    }
     public boolean hasCategory(String category) {
         for (String category_ : categories) {
             if(category.equals(category_)) {
@@ -86,5 +99,4 @@ public class Commodity {
         }
         return false;
     }
-
 }

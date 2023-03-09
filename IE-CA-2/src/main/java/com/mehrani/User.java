@@ -11,8 +11,9 @@ public class User {
     private String address;
     private double credit;
     private ArrayList<Integer> buyList = new ArrayList<>();
+    private ArrayList<Integer> commentsList = new ArrayList<>();
 
-    void setUserData(String username, String password, String birthday, String email, String address, double credit) {
+    public void setUserData(String username, String password, String birthday, String email, String address, double credit) {
         this.username = username;
         this.password = password;
         this.birthday = LocalDate.parse(birthday);
@@ -20,10 +21,10 @@ public class User {
         this.address = address;
         this.credit = credit;
     }
-    void setUsername(String username) {
+    public void setUsername(String username) {
         this.username = username;
     }
-    void setPassword(String password) {
+    public void setPassword(String password) {
         this.password = password;
     }
     public void setBirthday(String birthday) {
@@ -45,10 +46,19 @@ public class User {
         this.buyList.add(commodityId);
     }
     public void removeFromBuyList(int commodityId) {
-        buyList.remove(Integer.valueOf(commodityId));
+        this.buyList.remove(Integer.valueOf(commodityId));
     }
     public boolean itemExistsInBuyList(int commodityId) {
         return buyList.contains(commodityId);
+    }
+    public void setCommentsList(ArrayList<Integer> commentsList) {
+        this.commentsList = commentsList;
+    }
+    public void addCommentReference(int commentId) {
+        this.commentsList.add(commentId);
+    }
+    public void deleteCommentReference(int commentId) {
+       this.commentsList.remove(Integer.valueOf(commentId));
     }
     public LocalDate getBirthday() {
         return birthday;
@@ -70,5 +80,8 @@ public class User {
     }
     public ArrayList<Integer> getBuyList() {
         return buyList;
+    }
+    public ArrayList<Integer> getCommentsList() {
+        return commentsList;
     }
 }
