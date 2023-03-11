@@ -1,10 +1,8 @@
 package com.mehrani;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.mehrani.Baloot.Baloot;
+import com.mehrani.Baloot.Error;
 import org.junit.*;
-
-import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 

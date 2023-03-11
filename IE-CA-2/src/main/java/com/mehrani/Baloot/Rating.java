@@ -1,4 +1,4 @@
-package com.mehrani;
+package com.mehrani.Baloot;
 
 public class Rating {
     private String username;
