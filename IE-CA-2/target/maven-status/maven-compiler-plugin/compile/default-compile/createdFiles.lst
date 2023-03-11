@@ -8,4 +8,5 @@ com/mehrani/Baloot/Comment.class
 com/mehrani/Baloot/Commodity.class
 com/mehrani/Baloot/Error.class
 com/mehrani/Baloot/Provider.class
+com/mehrani/HTTPReqHandler/HTTPReqHandler.class
 com/mehrani/Baloot/LocalDateAdapter.class
