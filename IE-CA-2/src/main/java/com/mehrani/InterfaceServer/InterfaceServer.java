@@ -24,14 +24,14 @@ public class InterfaceServer {
         Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
         Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
         List<User> userList = gson.fromJson(userDataJsonStr, userListType);
-//        for (User user : userList) {
-//            System.out.println("username " + user.getUsername());
-//            System.out.println("password " + user.getPassword());
-//            //System.out.println("birthday" + user.getBirthday().toString());
-//            System.out.println("email " + user.getEmail());
-//            System.out.println("address " + user.getCredit());
-//            System.out.println("credit " + user.getCredit());
-//            System.out.println("------------------------");
-//        }
+        for (User user : userList) {
+            System.out.println("username : " + user.getUsername());
+            System.out.println("password : " + user.getPassword());
+            System.out.println("birthDate : " + user.getBirthDate().toString());
+            System.out.println("email : " + user.getEmail());
+            System.out.println("address : " + user.getAddress());
+            System.out.println("credit : " + user.getCredit());
+            System.out.println("------------------------");
+        }
     }
 }

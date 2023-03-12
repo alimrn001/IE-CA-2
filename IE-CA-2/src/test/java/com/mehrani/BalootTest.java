@@ -13,6 +13,8 @@ public class BalootTest {
 
     @BeforeClass
     public static void setup() {
+        String result0=baloot.checkUserCmd("addUser {\"username\": \"user1#\", \"password\": \"1234\", \"email\": \"user@gmail.com\", \"birthDate\": \"1977-09-15\", \"address\": \"address1\", \"credit\": 1500}");
+        assertEquals("{\"success\":false,\"data\":\"" + new Error().getUsernameWrongChar() + "\"}", result0);
         String result1=baloot.checkUserCmd("addUser {\"username\": \"user1\", \"password\": \"1234\", \"email\": \"user@gmail.com\", \"birthDate\": \"1977-09-15\", \"address\": \"address1\", \"credit\": 1500}");
         assertEquals("{\"success\":true,\"data\":\"\"}", result1);
         String result2=baloot.checkUserCmd("addProvider {\"id\": 3, \"name\": \"provider1\", \"registryDate\": \"2023-09-15\"}");
@@ -31,35 +33,6 @@ public class BalootTest {
         assertEquals("{\"success\":true,\"data\":\"\"}", result8);
 
         assertEquals(6.625, baloot.getBalootProviders().get(3).getAvgCommoditiesRate(), 0.000001);
-
-        System.out.println("Users : ");
-        for(Map.Entry<String, User> user : baloot.getBalootUsers().entrySet()) {
-            System.out.println("username : " + user.getValue().getUsername());
-            System.out.println("password : " + user.getValue().getPassword());
-            System.out.println("email : " + user.getValue().getEmail());
-            System.out.println("birthDate : " + user.getValue().getBirthDate());
-            System.out.println("address : " + user.getValue().getAddress());
-            System.out.println("credit : " + user.getValue().getCredit());
-            System.out.println("---------------------");
-        }
-        System.out.println("Providers : ");
-        for(Map.Entry<Integer, Provider> provider : baloot.getBalootProviders().entrySet()) {
-            System.out.println("provider id : " + provider.getValue().getId());
-            System.out.println("provider name : " + provider.getValue().getName());
-            System.out.println("provider registry date : " + provider.getValue().getRegistryDate().toString());
-            System.out.println("---------------------");
-        }
-        System.out.println("Commodities : ");
-        for(Map.Entry<Integer, Commodity> commodity : baloot.getBalootCommodities().entrySet()) {
-            System.out.println("id : " + commodity.getValue().getId());
-            System.out.println("name : " + commodity.getValue().getName());
-            System.out.println("provider id : " + commodity.getValue().getProviderId());
-            System.out.println("price : " + commodity.getValue().getPrice());;
-            System.out.println("rating : " + commodity.getValue().getRating());
-            System.out.println("categories : " + commodity.getValue().getCategories());
-            System.out.println("in stock : " + commodity.getValue().getInStock());
-            System.out.println("---------------------");
-        }
 
     }
 

@@ -39,7 +39,7 @@ public class Baloot {
             balootCategorySections.put(categoryName, category);
         }
     }
-    public String addUser(User user) {
+    public String addUser(User user) throws Exception{
         Response response = new Response();
         Gson gsonProvider = new GsonBuilder().create();
         if(balootUsers.containsKey(user.getUsername())) {
@@ -47,19 +47,22 @@ public class Baloot {
             balootUsers.put(user.getUsername(), user);
             response.setSuccess(true);
             response.setData("");
+            return gsonProvider.toJson(response);
         }
         else {
             if((user.getUsername().contains("!")) || (user.getUsername().contains("#")) || (user.getUsername().contains("@"))) {
                 response.setSuccess(false);
                 response.setData(error.getUsernameWrongChar());
+                throw new Exception(gsonProvider.toJson(response));
             }
             else {
                 balootUsers.put(user.getUsername(), user);
                 response.setSuccess(true);
                 response.setData("");
+                return gsonProvider.toJson(response);
             }
         }
-        return gsonProvider.toJson(response);
+        //return gsonProvider.toJson(response);
     }
     public String addCommodity(Commodity commodity) {
         Gson gsonCommodity = new GsonBuilder().create();
@@ -316,8 +319,13 @@ public class Baloot {
 
         switch (userCmd) {
             case "addUser" -> {
-                User user = gson.fromJson(userData, User.class);
-                return addUser(user);
+                try {
+                    User user = gson.fromJson(userData, User.class);
+                    return addUser(user);
+                }
+                catch (Exception e) {
+                    return e.getMessage();
+                }
             }
             case "rateCommodity" -> {
                 Gson gsonCommodity = new GsonBuilder().create();
