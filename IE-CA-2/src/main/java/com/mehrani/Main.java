@@ -1,18 +1,26 @@
 package com.mehrani;
 
 import com.mehrani.HTTPReqHandler.HTTPReqHandler;
+import com.mehrani.InterfaceServer.InterfaceServer;
 
 public class Main {
     public static void main(String[] args) {
         HTTPReqHandler reqHandler = new HTTPReqHandler();
-        String res = "";
+        InterfaceServer interfaceServer = new InterfaceServer();
         try {
-            res = reqHandler.httpGetRequest("http://5.253.25.110:5000/api/users");
+            interfaceServer.retrieveUsersDataFromAPI("http://5.253.25.110:5000/api/users");
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
         }
-
-        System.out.println(res);
+//        String res = "";
+//        try {
+//            res = reqHandler.httpGetRequest("http://5.253.25.110:5000/api/users");
+//        }
+//        catch (Exception e) {
+//            System.out.println(e.getMessage());
+//        }
+//
+//        System.out.println(res);
     }
 }

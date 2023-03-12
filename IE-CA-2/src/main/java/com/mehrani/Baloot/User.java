@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class User {
     private String username;
     private String password;
-    private LocalDate birthday;
+    private LocalDate birthDate;
     private String email;
     private String address;
     private double credit;
@@ -16,7 +16,7 @@ public class User {
     public void setUserData(String username, String password, String birthday, String email, String address, double credit) {
         this.username = username;
         this.password = password;
-        this.birthday = LocalDate.parse(birthday);
+        this.birthDate = LocalDate.parse(birthday);
         this.email = email;
         this.address = address;
         this.credit = credit;
@@ -28,7 +28,7 @@ public class User {
         this.password = password;
     }
     public void setBirthday(String birthday) {
-        this.birthday = LocalDate.parse(birthday);
+        this.birthDate = LocalDate.parse(birthday);
     }
     public void setEmail(String email) {
         this.email = email;
@@ -60,8 +60,8 @@ public class User {
     public void deleteCommentReference(int commentId) {
        this.commentsList.remove(Integer.valueOf(commentId));
     }
-    public LocalDate getBirthday() {
-        return birthday;
+    public LocalDate getBirthDate() {
+        return birthDate;
     }
     public double getCredit() {
         return credit;
