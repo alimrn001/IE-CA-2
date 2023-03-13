@@ -1,7 +1,9 @@
 package com.mehrani.Baloot;
 
 import com.google.gson.*;
+import com.mehrani.Baloot.Exceptions.CommodityNotExistsException;
 import com.mehrani.Baloot.Exceptions.NotEnoughCreditException;
+import com.mehrani.Baloot.Exceptions.UserNotExistsException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -340,6 +342,17 @@ public class Baloot {
             return gsonRating.toJson(response);
         }
     }
+    public User getBalootUser(String username) throws Exception {
+        if(!userExists(username))
+            throw new UserNotExistsException();
+        return balootUsers.get(username);
+    }
+    public Commodity getBalootCommodity(int commodityId) throws Exception{
+        if(!commodityExists(commodityId))
+            throw new CommodityNotExistsException();
+        return balootCommodities.get(commodityId);
+    }
+
     public Map<String, User> getBalootUsers() {
         return balootUsers;
     }

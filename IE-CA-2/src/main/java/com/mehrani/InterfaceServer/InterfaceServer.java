@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.mehrani.Baloot.*;
+import com.mehrani.Baloot.Exceptions.CommodityNotExistsException;
 import com.mehrani.Baloot.Exceptions.UserNotExistsException;
 import com.mehrani.HTTPReqHandler.HTTPReqHandler;
 import io.javalin.Javalin;
@@ -45,6 +46,7 @@ public class InterfaceServer {
     }
     public void runServer(int port) throws Exception {
         app = Javalin.create().start(port);
+
         app.get("users/{user_id}", ctx -> {
             try {
                 ctx.html(createUserHtmlPage(ctx.pathParam("user_id")));
@@ -54,13 +56,60 @@ public class InterfaceServer {
                 ctx.html(getHtmlContents("404.html"));
             }
         });
+
         app.get("addToBuyList/{username}/{commodityId}", ctx -> {
             try {
                 String username = ctx.pathParam("username");
                 String commodityId = ctx.pathParam("commodityId");
+                baloot.addRemoveBuyList(username, Integer.parseInt(commodityId), true);
+                ctx.html(getHtmlContents("200.html"));
+                ctx.status(200);
             }
-            catch (Exception e) {
+            catch (UserNotExistsException e) {
+                ctx.html(getHtmlContents("404.html"));
                 System.out.println(e.getMessage());
+                ctx.status(404); //needed ??
+                // can add additional features here
+            }
+            catch (CommodityNotExistsException e) {
+                ctx.html(getHtmlContents("404.html"));
+                System.out.println(e.getMessage());
+                ctx.status(404); //needed ??
+                // add additional features here
+            }
+            catch (NumberFormatException e) {
+                System.out.println(e.getMessage());
+                ctx.html(getHtmlContents("404.html"));
+                ctx.status(404); //needed ??
+                // can use this to avoid having id as non-int value
+            }
+        });
+
+        app.get("removeFromBuyList/{username}/{commodityId}", ctx -> {
+            try {
+                String username = ctx.pathParam("username");
+                String commodityId = ctx.pathParam("commodityId");
+                baloot.addRemoveBuyList(username, Integer.parseInt(commodityId), false);
+                ctx.html(getHtmlContents("200.html"));
+                ctx.status(200);
+            }
+            catch (UserNotExistsException e) {
+                ctx.html(getHtmlContents("404.html"));
+                System.out.println(e.getMessage());
+                ctx.status(404); //needed ??
+                // can add additional features here
+            }
+            catch (CommodityNotExistsException e) {
+                ctx.html(getHtmlContents("404.html"));
+                System.out.println(e.getMessage());
+                ctx.status(404); //needed ??
+                // add additional features here
+            }
+            catch (NumberFormatException e) {
+                System.out.println(e.getMessage());
+                ctx.html(getHtmlContents("404.html"));
+                ctx.status(404); //needed ??
+                // can use this to avoid having id as non-int value
             }
         });
     }
@@ -70,11 +119,9 @@ public class InterfaceServer {
         return FileUtils.readFileToString(file, StandardCharsets.UTF_8);
     }
     private String createUserHtmlPage(String username) throws Exception {
-        if(!baloot.userExists(username))
-            throw new UserNotExistsException();
-
         String userPageHtmlStr = getHtmlContents("userPages/UserInfo.html");
-        User user = baloot.getBalootUsers().get(username);
+        User user = baloot.getBalootUser(username);
+
         HashMap<String, String> userData = new HashMap<>();
         userData.put("Username", user.getUsername());
         userData.put("Email", user.getEmail());
@@ -89,6 +136,7 @@ public class InterfaceServer {
         for(Integer buyListItemId : baloot.getBalootUsers().get(username).getBuyList()) {
             userData = new HashMap<>();
             Commodity commodity = baloot.getBalootCommodities().get(buyListItemId);
+            userData.put("Username", user.getUsername()); // for removing from buy list we need username to generate url
             userData.put("Id", Integer.toString(commodity.getId()));
             userData.put("Name", commodity.getName());
             userData.put("ProviderId", Integer.toString(commodity.getProviderId()));
