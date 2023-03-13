@@ -1,6 +1,7 @@
 package com.mehrani.Baloot;
 
 import com.google.gson.*;
+import com.mehrani.Baloot.Exceptions.NotEnoughCreditException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -180,8 +181,23 @@ public class Baloot {
         response.setSuccess(true);
         response.setData("");
         balootUsers.get(username).addToBuyList(commodityId);
-        balootCommodities.get(commodityId).reduceInStock(1);
+        //balootCommodities.get(commodityId).reduceInStock(1);
         return gsonaddRemove.toJson(response);
+    }
+    public void purchaseUserBuyList(String username) throws Exception {
+        if(!userExists(username))
+            throw new Exception(error.getUserNotExists());
+
+        ArrayList<Integer> userBuyList = balootUsers.get(username).getBuyList();
+        double totalPurchasePrice = 0;
+        for(Integer buyListItemId : userBuyList)
+            totalPurchasePrice += balootCommodities.get(buyListItemId).getPrice();
+        if(balootUsers.get(username).getCredit() < totalPurchasePrice)
+            throw new NotEnoughCreditException();
+
+        balootUsers.get(username).purchaseBuyList(totalPurchasePrice);
+        for(Integer buyListItemId : userBuyList)
+            balootCommodities.get(buyListItemId).reduceInStock(1);
     }
     public String getCommoditiesByCategory(String category) {
         Response response = new Response();

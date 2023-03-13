@@ -12,6 +12,7 @@ public class User {
     private double credit;
     private ArrayList<Integer> buyList = new ArrayList<>();
     private ArrayList<Integer> commentsList = new ArrayList<>();
+    private ArrayList<Integer> purchasedList = new ArrayList<>();
 
     public void setUserData(String username, String password, String birthday, String email, String address, double credit) {
         this.username = username;
@@ -39,6 +40,11 @@ public class User {
     public void setCredit(double credit) {
         this.credit = credit;
     }
+    public void setPurchasedList(ArrayList<Integer> purchasedList) {
+        this.purchasedList = purchasedList;
+    }
+    public void addCredit(double creditAmount) {this.credit += creditAmount;}
+    public void reduceCredit(double creditAmount) {this.credit -= creditAmount;}
     public void setBuyList(ArrayList<Integer> buyList) {
         this.buyList = buyList;
     }
@@ -50,6 +56,14 @@ public class User {
     }
     public boolean itemExistsInBuyList(int commodityId) {
         return buyList.contains(commodityId);
+    }
+    public void purchaseBuyList(double purchasePrice) {
+        //you can also consider using a normal loop instead of addAll method
+        //this.purchasedList.addAll(this.buyList); //might want to add a 0 argument in order to append latest purchased at the beginning of the list
+        for(Integer buyListItemId : this.buyList)
+            purchasedList.add(buyListItemId);
+        this.buyList.clear();
+        this.credit -= purchasePrice;
     }
     public void setCommentsList(ArrayList<Integer> commentsList) {
         this.commentsList = commentsList;
@@ -83,5 +97,8 @@ public class User {
     }
     public ArrayList<Integer> getCommentsList() {
         return commentsList;
+    }
+    public ArrayList<Integer> getPurchasedList() {
+        return purchasedList;
     }
 }
