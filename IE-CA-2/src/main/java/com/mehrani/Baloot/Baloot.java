@@ -39,6 +39,17 @@ public class Baloot {
         return balootComments.containsKey(commentId);
     }
 
+    public boolean userEmailExists(String userEmail) {
+        boolean emailExists = false;
+        for(Map.Entry<String, User> userEntry : balootUsers.entrySet()) {
+            if (userEntry.getValue().getEmail().equals(userEmail)) {
+                emailExists = true;
+                break;
+            }
+        }
+        return emailExists; // is email unique for users ?? if not how to identify user account in comment by just email ? how to find its id??
+    }
+
     public void updateCategorySection(String categoryName, int commodityId) {
         if(categoryExists(categoryName)) {
             balootCategorySections.get(categoryName).addCommodityToCategory(commodityId);
@@ -76,59 +87,30 @@ public class Baloot {
         }
     }
 
-    public String addCommodity(Commodity commodity) throws Exception {
-        Gson gsonCommodity = new GsonBuilder().create();
-        Response response = new Response();
+    public void addCommodity(Commodity commodity) throws Exception {
         commodity.initializeJsonExcludedFields();
 
-        if(!balootProviders.containsKey(commodity.getProviderId())) {
-            response.setSuccess(false);
-            response.setData(error.getProviderNotExists());
-            throw new Exception(gsonCommodity.toJson(response));
+        if(!providerExists(commodity.getProviderId()))
+            throw new ProviderNotExistsException();
+
+        if(commodityExists(commodity.getId()))
+            throw new CommodityWithSameIDException();
+
+        balootProviders.get(commodity.getProviderId()).addProvidedCommodity(commodity.getId());
+        for (String category : commodity.getCategories()) {
+            updateCategorySection(category, commodity.getId());
         }
-        else {
-            if(!balootCommodities.containsKey(commodity.getId())) {
-                balootProviders.get(commodity.getProviderId()).addProvidedCommodity(commodity.getId());
-                for (String ctgr : commodity.getCategories()) {
-                    updateCategorySection(ctgr, commodity.getId());
-                }
-                balootCommodities.put(commodity.getId(), commodity);
-                response.setSuccess(true);
-                response.setData("");
-                balootProviders.get(commodity.getProviderId()).updateCommoditiesData(commodity.getRating());
-                return gsonCommodity.toJson(response);
-            }
-            else {
-                response.setSuccess(false);
-                response.setData(error.getCommodityIdExists());
-                throw new Exception(gsonCommodity.toJson(response));
-            }
-        }
+        balootCommodities.put(commodity.getId(), commodity);
+        balootProviders.get(commodity.getProviderId()).updateCommoditiesData(commodity.getRating());
     }
 
-    public String addProvider(Provider provider) throws Exception {
-        Response response = new Response();
+    public void addProvider(Provider provider) throws Exception {
         if(providerExists(provider.getId())) {
             balootProviders.get(provider.getId()).setName(provider.getName());
             balootProviders.get(provider.getId()).setRegistryDate(provider.getRegistryDate().toString());
         }
         else
             balootProviders.put(provider.getId(), provider);
-        response.setSuccess(true);
-        response.setData("");
-        Gson gsonProvider = new GsonBuilder().create();
-        return gsonProvider.toJson(response);
-    }
-
-    public boolean userEmailExists(String userEmail) {
-        boolean emailExists = false;
-        for(Map.Entry<String, User> userEntry : balootUsers.entrySet()) {
-            if (userEntry.getValue().getEmail().equals(userEmail)) {
-                emailExists = true;
-                break;
-            }
-        }
-        return emailExists; // is email unique for users ?? if not how to identify user account in comment by just email ? how to find its id??
     }
 
     public void addComment(Comment comment) throws Exception {
@@ -147,15 +129,24 @@ public class Baloot {
         balootCommodities.get(comment.getCommodityId()).addComment(comment.getCommentId());
     }
 
-    public Map<Integer, Comment> getCommodityComments(int commodityId) throws Exception {
+    public void addRating(String username, int commodityId, int rate) throws Exception {
+        User user = getBalootUser(username);
         if(!commodityExists(commodityId))
             throw new CommodityNotExistsException();
-        Map<Integer, Comment> result = new HashMap<>();
-        for (Map.Entry<Integer, Comment> commentEntry : balootComments.entrySet()) {
-            if(commentEntry.getValue().getCommodityId()==commodityId)
-                result.put(commentEntry.getKey(), commentEntry.getValue());
+        if(rate > 10 || rate < 1)
+            throw new RatingOutOfRangeException();
+
+        String ratingPrimaryKey = username + "_" + commodityId;
+        Rating rating = new Rating();
+        rating.setData(username, commodityId, rate);
+        if(!balootRatings.containsKey(ratingPrimaryKey)) {
+            balootCommodities.get(commodityId).addNewRating(rate);
+            balootRatings.put(ratingPrimaryKey, rating);
+            return;
         }
-        return result;
+        int previousRate = balootRatings.get(ratingPrimaryKey).getScore();
+        balootCommodities.get(commodityId).updateUserRating(previousRate, rate);
+        balootRatings.put(ratingPrimaryKey, rating);
     }
 
     public void addRemoveBuyList(String username, int commodityId, boolean isAdding) throws Exception {
@@ -242,6 +233,50 @@ public class Baloot {
         if(credit <= 0)
             throw new NegativeCreditAddingException();
         user.addCredit(credit);
+    }
+
+    public void voteComment(String username, int commentId, int vote) throws Exception {
+        if(!userExists(username))
+            throw new UserNotExistsException();
+        if(!commentExists(commentId))
+            throw new CommentNotExistsException();
+
+        boolean beenLikedBefore = balootUsers.get(username).userHasLikedComment(commentId);
+        boolean beenDislikedBefore = balootUsers.get(username).userHasDislikedComment(commentId);
+
+        if(vote==1) {
+            balootUsers.get(username).addCommentToLikedList(commentId);
+            if(!beenLikedBefore)
+                balootComments.get(commentId).addLike();
+            if(beenDislikedBefore)
+                balootComments.get(commentId).removeDislike();
+        }
+
+        else if(vote==0) { // ????
+            balootComments.get(commentId).addNeutralVote();
+        }
+
+        else if(vote==-1) {
+            balootUsers.get(username).addCommentToDislikedList(commentId);
+            if(!beenDislikedBefore)
+                balootComments.get(commentId).addDislike();
+            if(beenLikedBefore)
+                balootComments.get(commentId).removeLike();
+        }
+
+        else
+            throw new WrongVoteValueException();
+    }
+
+    public Map<Integer, Comment> getCommodityComments(int commodityId) throws Exception {
+        if(!commodityExists(commodityId))
+            throw new CommodityNotExistsException();
+        Map<Integer, Comment> result = new HashMap<>();
+        for (Map.Entry<Integer, Comment> commentEntry : balootComments.entrySet()) {
+            if(commentEntry.getValue().getCommodityId()==commodityId)
+                result.put(commentEntry.getKey(), commentEntry.getValue());
+        }
+        return result;
     }
 
     public Map<Integer, Commodity> getCommoditiesByCategory(String category) {
@@ -348,26 +383,6 @@ public class Baloot {
         responseObject.addProperty("success", true);
         responseObject.add("data", new Gson().toJsonTree(commoditiesListObject));
         return gson.toJson(responseObject);
-    }
-
-    public void addRating(String username, int commodityId, int rate) throws Exception {
-        User user = getBalootUser(username);
-        if(!commodityExists(commodityId))
-            throw new CommodityNotExistsException();
-        if(rate > 10 || rate < 1)
-            throw new RatingOutOfRangeException();
-
-        String ratingPrimaryKey = username + "_" + commodityId;
-        Rating rating = new Rating();
-        rating.setData(username, commodityId, rate);
-        if(!balootRatings.containsKey(ratingPrimaryKey)) {
-            balootCommodities.get(commodityId).addNewRating(rate);
-            balootRatings.put(ratingPrimaryKey, rating);
-            return;
-        }
-        int previousRate = balootRatings.get(ratingPrimaryKey).getScore();
-        balootCommodities.get(commodityId).updateUserRating(previousRate, rate);
-        balootRatings.put(ratingPrimaryKey, rating);
     }
 
     public User getBalootUser(String username) throws Exception {

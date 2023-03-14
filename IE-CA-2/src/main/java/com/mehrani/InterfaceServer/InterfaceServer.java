@@ -37,9 +37,11 @@ public class InterfaceServer {
             System.out.println(e.getMessage());
         }
     }
+
     public void stop() {
         // stop javalin
     }
+
     public Baloot getBaloot() {
         return baloot;
     }
@@ -51,7 +53,7 @@ public class InterfaceServer {
             try {
                 ctx.html(createUserHtmlPage(ctx.pathParam("user_id")));
             }
-            catch(Exception e) {
+            catch (Exception e) {
                 System.out.println(e.getMessage());
                 ctx.html(getHtmlContents("404.html"));
                 //ctx.status(404);
@@ -78,19 +80,16 @@ public class InterfaceServer {
                     ctx.status(200);
                 }
             }
-
-            catch(ItemNotInBuyListForRemovingException e) {
+            catch (ItemNotInBuyListForRemovingException e) {
                 ctx.html(getHtmlContents("403.html"));
                 ctx.status(403);
             }
-
-            catch(NotEnoughCreditException e) {
+            catch (NotEnoughCreditException e) {
                 ctx.html(getHtmlContents("403.html"));
                 ctx.status(403);
                 //might design a new "function failed" page for it
             }
-
-            catch(Exception e) {
+            catch (Exception e) {
                 System.out.println(e.getMessage());
             }
         });
@@ -103,19 +102,19 @@ public class InterfaceServer {
                 ctx.html(getHtmlContents("200.html"));
                 ctx.status(200);
             }
-            catch(UserNotExistsException e) {
+            catch (UserNotExistsException e) {
                 ctx.html(getHtmlContents("404.html"));
                 System.out.println(e.getMessage());
                 ctx.status(404); //needed ??
                 // can add additional features here
             }
-            catch(CommodityNotExistsException e) {
+            catch (CommodityNotExistsException e) {
                 ctx.html(getHtmlContents("404.html"));
                 System.out.println(e.getMessage());
                 ctx.status(404); //needed ??
                 // add additional features here
             }
-            catch(ItemAlreadyExistsInBuyListException e) {
+            catch (ItemAlreadyExistsInBuyListException e) {
                 ctx.html(getHtmlContents("FunctionFailed.html"));
                 //ctx.status(403); //?????
             }
@@ -135,19 +134,19 @@ public class InterfaceServer {
                 ctx.html(getHtmlContents("200.html"));
                 ctx.status(200);
             }
-            catch(UserNotExistsException e) {
+            catch (UserNotExistsException e) {
                 ctx.html(getHtmlContents("404.html"));
                 System.out.println(e.getMessage());
                 ctx.status(404); //needed ??
                 // can add additional features here
             }
-            catch(CommodityNotExistsException e) {
+            catch (CommodityNotExistsException e) {
                 ctx.html(getHtmlContents("404.html"));
                 System.out.println(e.getMessage());
                 ctx.status(404); //needed ??
                 // add additional features here
             }
-            catch(NumberFormatException e) {
+            catch (NumberFormatException e) {
                 System.out.println(e.getMessage());
                 ctx.html(getHtmlContents("404.html"));
                 ctx.status(404); //needed ??
@@ -163,17 +162,17 @@ public class InterfaceServer {
                 ctx.html(getHtmlContents("200.html"));
                 ctx.status(200);
             }
-            catch(UserNotExistsException e) {
+            catch (UserNotExistsException e) {
                 ctx.html(getHtmlContents("404.html"));
                 System.out.println(e.getMessage());
                 ctx.status(404);
             }
-            catch(NegativeCreditAddingException e) {
+            catch (NegativeCreditAddingException e) {
                 ctx.html(getHtmlContents("403.html"));
                 System.out.println(e.getMessage());
                 ctx.status(403);
             }
-            catch(NumberFormatException e) {
+            catch (NumberFormatException e) {
                 ctx.html(getHtmlContents("403.html"));
                 System.out.println(e.getMessage());
                 ctx.status(403);
@@ -185,12 +184,12 @@ public class InterfaceServer {
             try {
                 ctx.html(createProviderHtmlPage(Integer.parseInt(ctx.pathParam("provider_id"))));
             }
-            catch(ProviderNotExistsException e) {
+            catch (ProviderNotExistsException e) {
                 ctx.html(getHtmlContents("404.html"));
                 System.out.println(e.getMessage());
                 //ctx.status(404);
             }
-            catch(NumberFormatException e) {
+            catch (NumberFormatException e) {
                 ctx.html(getHtmlContents("403.html"));
                 ctx.status(403);
             }
@@ -200,7 +199,7 @@ public class InterfaceServer {
             try {
                 ctx.html(createCommoditiesListHtmlPage(baloot.getBalootCommodities()));
             }
-            catch(Exception e) {
+            catch (Exception e) {
                 System.out.println(e.getMessage());
             }
         });
@@ -209,11 +208,11 @@ public class InterfaceServer {
             try {
                 ctx.html(createCommodityItemHtmlPage(Integer.parseInt(ctx.pathParam("commodity_id"))));
             }
-            catch(CommodityNotExistsException e) {
+            catch (CommodityNotExistsException e) {
                 ctx.html(getHtmlContents("404.html"));
                 ctx.status(404);
             }
-            catch(NumberFormatException e) {
+            catch (NumberFormatException e) {
                 ctx.html(getHtmlContents("404.html"));
                 ctx.status(404);
                 //for wrong input
@@ -226,7 +225,7 @@ public class InterfaceServer {
                 ctx.html(createCommoditiesListHtmlPage(baloot.getCommoditiesByCategory(category)));
                 ctx.status(202);
             }
-            catch(Exception e) {
+            catch (Exception e) {
                 System.out.println(e.getMessage());
             }
         });
@@ -242,7 +241,7 @@ public class InterfaceServer {
                 ctx.html(getHtmlContents("404.html"));
                 ctx.status(404);
             }
-            catch(Exception e) {
+            catch (Exception e) {
                 System.out.println(e.getMessage());
             }
         });
@@ -256,21 +255,52 @@ public class InterfaceServer {
                 ctx.html(getHtmlContents("200.html")); //reloading this page won't change rating
                 ctx.status(202);
             }
-            catch(UserNotExistsException e) {
+            catch (UserNotExistsException e) {
                 ctx.html(getHtmlContents("404.html"));
                 ctx.status(404);
                // to handle username problems
             }
-            catch(CommodityNotExistsException e) {
+            catch (CommodityNotExistsException e) {
                 ctx.html(getHtmlContents("404.html"));
                 ctx.status(404);
                // to handle commodityID problems
             }
-            catch(NumberFormatException e) {
+            catch (NumberFormatException e) {
                 ctx.html(getHtmlContents("404.html"));
                 ctx.status(404);
             }
-            catch(Exception e) {
+            catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        });
+
+        app.get("voteComment/{username}/{commentId}/{vote}", ctx -> {
+            try {
+                String username = ctx.pathParam("username");
+                int commentId = Integer.parseInt(ctx.pathParam("commentId"));
+                int vote = Integer.parseInt(ctx.pathParam("vote"));
+                baloot.voteComment(username, commentId, vote);
+                ctx.html(getHtmlContents("200.html"));
+                ctx.status(200);
+            }
+            catch (UserNotExistsException e) {
+                ctx.html(getHtmlContents("404.html"));
+                ctx.status(404);
+                System.out.println(e.getMessage());
+                // for wrong username
+            }
+            catch (CommentNotExistsException e) {
+                ctx.html(getHtmlContents("404.html"));
+                ctx.status(404);
+                System.out.println(e.getMessage());
+                //for wrong comment id
+            }
+            catch (WrongVoteValueException e) {
+                ctx.html(getHtmlContents("404.html"));
+                ctx.status(404);
+                System.out.println(e.getMessage());
+            }
+            catch (Exception e) {
                 System.out.println(e.getMessage());
             }
         });

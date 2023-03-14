@@ -23,6 +23,10 @@ public class User {
 
     private ArrayList<Integer> purchasedList = new ArrayList<>();
 
+    private ArrayList<Integer> likedComments = new ArrayList<>();
+
+    private ArrayList<Integer> dislikedComments = new ArrayList<>();
+
     public void setUserData(String username, String password, String birthday, String email, String address, double credit) {
         this.username = username;
         this.password = password;
@@ -84,6 +88,14 @@ public class User {
         return buyList.contains(commodityId);
     }
 
+    public boolean userHasLikedComment(int commentId) {
+        return likedComments.contains(commentId);
+    }
+
+    public boolean userHasDislikedComment(int commentId) {
+        return dislikedComments.contains(commentId);
+    }
+
     public void purchaseBuyList(double purchasePrice) {
         //you can also consider using a normal loop instead of addAll method
         //this.purchasedList.addAll(this.buyList); //might want to add a 0 argument in order to append latest purchased at the beginning of the list
@@ -97,12 +109,44 @@ public class User {
         this.commentsList = commentsList;
     }
 
+    public void setLikedComments(ArrayList<Integer> likedComments) {
+        this.likedComments = likedComments;
+    }
+
+    public void setDislikedComments(ArrayList<Integer> dislikedComments) {
+        this.dislikedComments = dislikedComments;
+    }
+
     public void addCommentReference(int commentId) {
         this.commentsList.add(commentId);
     }
 
     public void deleteCommentReference(int commentId) {
        this.commentsList.remove(Integer.valueOf(commentId));
+    }
+
+    public void removeLikeFromComment(int commentId) {
+        this.likedComments.remove(Integer.valueOf(commentId));
+    }
+
+    public void removeDislikeFromComment(int commentId) {
+        this.dislikedComments.remove(Integer.valueOf(commentId));
+    }
+
+    public void addCommentToLikedList(int commentId) {
+        if(!userHasLikedComment(commentId)) {
+            if(userHasDislikedComment(commentId))
+                removeDislikeFromComment(commentId);
+            likedComments.add(commentId);
+        }
+    }
+
+    public void addCommentToDislikedList(int commentId) {
+        if(!userHasDislikedComment(commentId)) {
+            if(userHasLikedComment(commentId))
+                removeLikeFromComment(commentId);
+            dislikedComments.add(commentId);
+        }
     }
 
     public LocalDate getBirthDate() {
@@ -141,4 +185,11 @@ public class User {
         return purchasedList;
     }
 
+    public ArrayList<Integer> getLikedComments() {
+        return likedComments;
+    }
+
+    public ArrayList<Integer> getDislikedComments() {
+        return dislikedComments;
+    }
 }

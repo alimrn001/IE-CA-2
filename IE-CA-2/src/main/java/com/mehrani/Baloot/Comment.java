@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public class Comment {
     private int commentId;
-    private String userEmail;
+    private String userEmail; // might be good to also add username
     private int commodityId;
     private String text;
     private LocalDate date;
