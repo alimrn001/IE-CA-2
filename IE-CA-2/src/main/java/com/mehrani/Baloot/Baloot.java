@@ -35,6 +35,10 @@ public class Baloot {
         return balootProviders.containsKey(providerId);
     }
 
+    public boolean commentExists(int commentId) {
+        return balootComments.containsKey(commentId);
+    }
+
     public void updateCategorySection(String categoryName, int commodityId) {
         if(balootCategorySections.containsKey(categoryName)) {
             balootCategorySections.get(categoryName).addCommodityToCategory(commodityId);
@@ -75,6 +79,8 @@ public class Baloot {
     public String addCommodity(Commodity commodity) throws Exception {
         Gson gsonCommodity = new GsonBuilder().create();
         Response response = new Response();
+        commodity.initializeJsonExcludedFields();
+
         if(!balootProviders.containsKey(commodity.getProviderId())) {
             response.setSuccess(false);
             response.setData(error.getProviderNotExists());
@@ -125,28 +131,31 @@ public class Baloot {
         return emailExists; // is email unique for users ?? if not how to identify user account in comment by just email ? how to find its id??
     }
 
-    public String addComment(Comment comment) throws Exception {
-        Response response = new Response();
-        Gson gsonResponse = new GsonBuilder().create();
+    public void addComment(Comment comment) throws Exception {
         if(!userEmailExists(comment.getUserEmail())) {
-            response.setSuccess(false);
-            response.setData(error.getUserNotExists());
-            throw new Exception(gsonResponse.toJson(response));
+            throw new UserNotExistsException();
         }
         if(!commodityExists(comment.getCommodityId())) {
-            response.setSuccess(false);
-            response.setData(error.getCommodityNotExists());
-            throw new Exception(gsonResponse.toJson(response));
+            throw new CommodityNotExistsException();
         }
         comment.setCommentId(latestCommentID+1);
         comment.setLikesNo(0);
         comment.setDislikesNo(0);
         comment.setNeutralVotesNo(0);
         balootComments.put(comment.getCommentId(), comment);
-        response.setSuccess(true);
-        response.setData("");
         latestCommentID++;
-        return gsonResponse.toJson(response);
+        balootCommodities.get(comment.getCommodityId()).addComment(comment.getCommentId());
+    }
+
+    public Map<Integer, Comment> getCommodityComments(int commodityId) throws Exception {
+        if(!commodityExists(commodityId))
+            throw new CommodityNotExistsException();
+        Map<Integer, Comment> result = new HashMap<>();
+        for (Map.Entry<Integer, Comment> commentEntry : balootComments.entrySet()) {
+            if(commentEntry.getValue().getCommodityId()==commodityId)
+                result.put(commentEntry.getKey(), commentEntry.getValue());
+        }
+        return result;
     }
 
     public void addRemoveBuyList(String username, int commodityId, boolean isAdding) throws Exception {
@@ -397,6 +406,12 @@ public class Baloot {
         if(!providerExists(providerId))
             throw new ProviderNotExistsException();
         return balootProviders.get(providerId);
+    }
+
+    public Comment getBalootComment(int commentId) throws Exception {
+        if(!commentExists(commentId))
+            throw new CommentNotExistsException();
+        return balootComments.get(commentId);
     }
 
     public Map<String, User> getBalootUsers() {

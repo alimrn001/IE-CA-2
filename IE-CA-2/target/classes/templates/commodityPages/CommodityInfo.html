@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Commodity</title>
+    <style>
+      li {
+        padding: 5px;
+      }
+      table {
+        width: 50%;
+        text-align: center;
+      }
+    </style>
+</head>
+<body>
+
+<ul>
+    <li id="id">Id: %Id%</li>
+    <li id="name">Name: %Name%</li>
+    <li id="providerId">Provider Id: %ProviderId%</li>
+    <li id="price">Price: %Price%</li>
+    <li id="categories">Categories: %Categories%</li>
+    <li id="rating">Rating: %Rating%</li>
+    <li id="inStock">In Stock: %InStock%</li>
+</ul>
+
+<label>Your ID:</label>
+<input type="text" name="user_id" value="" />
+<br><br>
+<form action="" method="POST">
+    <label>Rate(between 1 and 10):</label>
+    <input type="number" id="quantity" name="rateValue" min="1" max="10">
+    <button type="submit">Rate</button>
+</form>
+<br>
+<form action="" method="POST">
+    <button type="submit">Add to BuyList</button>
+</form>
+<br />
+
+<table>
+    <tr>
+        <th>username</th>
+        <th>comment</th>
+        <th>date</th>
+        <th></th>
+        <th></th>
+    </tr>

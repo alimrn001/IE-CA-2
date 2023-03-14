@@ -24,6 +24,10 @@ public class Commodity {
         this.inStock = inStock;
         this.numOfRatings = 1;
     }
+    public void initializeJsonExcludedFields() {
+        numOfRatings=1;
+        comments = new ArrayList<>();
+    }
     public void setId(int id) {
         this.id = id;
     }
@@ -62,7 +66,9 @@ public class Commodity {
         this.rating += ((newRating - previousRating)/numOfRatings);
     }
     public void addComment(int commentId) {
-        this.comments.add(commentId);
+        if(comments == null)
+            comments = new ArrayList<>();
+        comments.add(commentId);
     }
     public void removeComment(int commentId) {
         this.comments.remove(Integer.valueOf(commentId));

@@ -103,17 +103,21 @@ public class InterfaceServer {
                 ctx.html(getHtmlContents("200.html"));
                 ctx.status(200);
             }
-            catch (UserNotExistsException e) {
+            catch(UserNotExistsException e) {
                 ctx.html(getHtmlContents("404.html"));
                 System.out.println(e.getMessage());
                 ctx.status(404); //needed ??
                 // can add additional features here
             }
-            catch (CommodityNotExistsException e) {
+            catch(CommodityNotExistsException e) {
                 ctx.html(getHtmlContents("404.html"));
                 System.out.println(e.getMessage());
                 ctx.status(404); //needed ??
                 // add additional features here
+            }
+            catch(ItemAlreadyExistsInBuyListException e) {
+                ctx.html(getHtmlContents("FunctionFailed.html"));
+                //ctx.status(403); //?????
             }
             catch (NumberFormatException e) {
                 System.out.println(e.getMessage());
@@ -206,7 +210,13 @@ public class InterfaceServer {
                 ctx.html(createCommodityItemHtmlPage(Integer.parseInt(ctx.pathParam("commodity_id"))));
             }
             catch(CommodityNotExistsException e) {
-
+                ctx.html(getHtmlContents("404.html"));
+                ctx.status(404);
+            }
+            catch(NumberFormatException e) {
+                ctx.html(getHtmlContents("404.html"));
+                ctx.status(404);
+                //for wrong input
             }
         });
     }
@@ -239,7 +249,7 @@ public class InterfaceServer {
             userData.put("Id", Integer.toString(commodity.getId()));
             userData.put("Name", commodity.getName());
             userData.put("ProviderId", Integer.toString(commodity.getProviderId()));
-            userData.put("Price", Double.toString(commodity.getPrice()));
+            userData.put("Price", Integer.toString(commodity.getPrice()));
             userData.put("Categories", commodity.getCategories().toString());
             userData.put("Rating", Double.toString(commodity.getRating()));
             userData.put("InStock", Integer.toString(commodity.getInStock()));
@@ -257,7 +267,7 @@ public class InterfaceServer {
             userData.put("Id", Integer.toString(commodity.getId()));
             userData.put("Name", commodity.getName());
             userData.put("ProviderId", Integer.toString(commodity.getProviderId()));
-            userData.put("Price", Double.toString(commodity.getPrice()));
+            userData.put("Price", Integer.toString(commodity.getPrice()));
             userData.put("Categories", commodity.getCategories().toString());
             userData.put("Rating", Double.toString(commodity.getRating()));
             userData.put("InStock", Integer.toString(commodity.getInStock()));
@@ -283,7 +293,7 @@ public class InterfaceServer {
             Commodity commodity = baloot.getBalootCommodity(providerCommodityId);
             providerData.put("Id", Integer.toString(commodity.getId()));
             providerData.put("Name", commodity.getName());
-            providerData.put("Price", Double.toString(commodity.getPrice()));
+            providerData.put("Price", Integer.toString(commodity.getPrice()));
             providerData.put("Categories", commodity.getCategories().toString());
             providerData.put("Rating", Double.toString(commodity.getRating()));
             providerData.put("InStock", Integer.toString(commodity.getInStock()));
@@ -302,7 +312,7 @@ public class InterfaceServer {
             commodityData.put("Id", String.valueOf(commoditiesSetEntry.getValue().getId()));
             commodityData.put("Name", commoditiesSetEntry.getValue().getName());
             commodityData.put("ProviderId", Integer.toString(commoditiesSetEntry.getValue().getProviderId()));
-            commodityData.put("Price", Double.toString(commoditiesSetEntry.getValue().getPrice()));
+            commodityData.put("Price", Integer.toString(commoditiesSetEntry.getValue().getPrice()));
             commodityData.put("Categories", commoditiesSetEntry.getValue().getCategories().toString());
             commodityData.put("Rating", Double.toString(commoditiesSetEntry.getValue().getRating()));
             commodityData.put("InStock", Integer.toString(commoditiesSetEntry.getValue().getInStock()));
@@ -314,8 +324,32 @@ public class InterfaceServer {
     }
 
     private String createCommodityItemHtmlPage(int commodityId) throws Exception {
-        String commodityItemHtmlPageStr = "";
+        String commodityItemHtmlPageStr = getHtmlContents("commodityPages/CommodityInfo.html");
+        String commentItem = getHtmlContents("commodityPages/CommodityComment.html");
+        Commodity commodity = baloot.getBalootCommodity(commodityId);
+        HashMap<String, String> commodityData = new HashMap<>();
+        commodityData.put("Id", String.valueOf(commodity.getId()));
+        commodityData.put("Name", commodity.getName());
+        commodityData.put("ProviderId", String.valueOf(commodity.getProviderId()));
+        commodityData.put("Price", Integer.toString(commodity.getPrice()));
+        commodityData.put("Categories", commodity.getCategories().toString());
+        commodityData.put("Rating", Double.toString(commodity.getRating()));
+        commodityData.put("InStock", Integer.toString(commodity.getInStock()));
+        commodityItemHtmlPageStr = htmlHandler.fillTemplatePage(commodityItemHtmlPageStr, commodityData);
 
+        for(int commentID : commodity.getComments()) {
+            Comment comment = baloot.getBalootComment(commentID);
+            HashMap<String, String> commentData = new HashMap<>();
+            commentData.put("CommentID", String.valueOf(comment.getCommentId()));
+            commentData.put("username", comment.getUserEmail());
+            commentData.put("text", comment.getText());
+            commentData.put("commentDate", comment.getDate().toString());
+            commentData.put("LikesNo", String.valueOf(comment.getLikesNo()));
+            commentData.put("DislikesNo", String.valueOf(comment.getDislikesNo()));
+            commodityItemHtmlPageStr += htmlHandler.fillTemplatePage(commentItem, commentData);
+        }
+
+        commodityItemHtmlPageStr += getHtmlContents("commodityPages/CommodityEnd.html");
         return commodityItemHtmlPageStr;
     }
 
