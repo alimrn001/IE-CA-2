@@ -1,10 +1,7 @@
 package com.mehrani.Baloot;
 
 import com.google.gson.*;
-import com.mehrani.Baloot.Exceptions.CommodityNotExistsException;
-import com.mehrani.Baloot.Exceptions.NegativeCreditAddingException;
-import com.mehrani.Baloot.Exceptions.NotEnoughCreditException;
-import com.mehrani.Baloot.Exceptions.UserNotExistsException;
+import com.mehrani.Baloot.Exceptions.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -25,15 +22,19 @@ public class Baloot {
     public boolean commodityExists(int commodityId) {
         return balootCommodities.containsKey(commodityId);
     }
+
     public boolean userExists(String username) {
         return balootUsers.containsKey(username);
     }
+
     public boolean categoryExists(String category) {
         return balootCategorySections.containsKey(category);
     }
+
     public boolean providerExists(int providerId) {
         return balootProviders.containsKey(providerId);
     }
+
     public void updateCategorySection(String categoryName, int commodityId) {
         if(balootCategorySections.containsKey(categoryName)) {
             balootCategorySections.get(categoryName).addCommodityToCategory(commodityId);
@@ -45,6 +46,7 @@ public class Baloot {
             balootCategorySections.put(categoryName, category);
         }
     }
+
     public String addUser(User user) throws Exception {
         Response response = new Response();
         Gson gsonProvider = new GsonBuilder().create();
@@ -69,6 +71,7 @@ public class Baloot {
             }
         }
     }
+
     public String addCommodity(Commodity commodity) throws Exception {
         Gson gsonCommodity = new GsonBuilder().create();
         Response response = new Response();
@@ -96,6 +99,7 @@ public class Baloot {
             }
         }
     }
+
     public String addProvider(Provider provider) throws Exception {
         Response response = new Response();
         if(providerExists(provider.getId())) {
@@ -109,6 +113,7 @@ public class Baloot {
         Gson gsonProvider = new GsonBuilder().create();
         return gsonProvider.toJson(response);
     }
+
     public boolean userEmailExists(String userEmail) {
         boolean emailExists = false;
         for(Map.Entry<String, User> userEntry : balootUsers.entrySet()) {
@@ -119,6 +124,7 @@ public class Baloot {
         }
         return emailExists; // is email unique for users ?? if not how to identify user account in comment by just email ? how to find its id??
     }
+
     public String addComment(Comment comment) throws Exception {
         Response response = new Response();
         Gson gsonResponse = new GsonBuilder().create();
@@ -142,6 +148,7 @@ public class Baloot {
         latestCommentID++;
         return gsonResponse.toJson(response);
     }
+
     public String addRemoveBuyList(String username, int commodityId, boolean isAdding) throws Exception {
         Response response = new Response();
         Gson gsonaddRemove = new GsonBuilder().create();
@@ -187,6 +194,7 @@ public class Baloot {
         //balootCommodities.get(commodityId).reduceInStock(1);
         return gsonaddRemove.toJson(response);
     }
+
     public void purchaseUserBuyList(String username) throws Exception {
         if(!userExists(username))
             throw new Exception(error.getUserNotExists());
@@ -202,12 +210,14 @@ public class Baloot {
         for(Integer buyListItemId : userBuyList)
             balootCommodities.get(buyListItemId).reduceInStock(1);
     }
+
     public void addCreditToUser(String username, double credit) throws Exception {
         User user = getBalootUser(username);
         if(credit <= 0)
             throw new NegativeCreditAddingException();
         user.addCredit(credit);
     }
+
     public String getCommoditiesByCategory(String category) {
         Response response = new Response();
         JsonObject responseObject = new JsonObject();
@@ -240,6 +250,7 @@ public class Baloot {
         responseObject.add("data", new Gson().toJsonTree(commoditiesListObject));
         return responseObject.toString();
     }
+
     public String getCommodityById(int commodityId) throws Exception {
         Response response = new Response();
         Gson gsonObj = new GsonBuilder().create();
@@ -267,6 +278,7 @@ public class Baloot {
         responseObj.add("data", new Gson().toJsonTree(jsonObj));
         return responseObj.toString();
     }
+
     public String getCommoditiesList() {
         Gson gson = new GsonBuilder().create();
         JsonObject responseObject = new JsonObject();
@@ -291,6 +303,7 @@ public class Baloot {
         responseObject.add("data", new Gson().toJsonTree(commoditiesListObject));
         return gson.toJson(responseObject);
     }
+
     public String getBuyList(String username) throws Exception {
         Gson gson = new GsonBuilder().create();
         JsonObject responseObject = new JsonObject();
@@ -321,6 +334,7 @@ public class Baloot {
         responseObject.add("data", new Gson().toJsonTree(commoditiesListObject));
         return gson.toJson(responseObject);
     }
+
     public String addRating(Rating rating) throws Exception {
         Response response = new Response();
         Gson gsonRating = new GsonBuilder().create();
@@ -349,35 +363,49 @@ public class Baloot {
             return gsonRating.toJson(response);
         }
     }
+
     public User getBalootUser(String username) throws Exception {
         if(!userExists(username))
             throw new UserNotExistsException();
         return balootUsers.get(username);
     }
-    public Commodity getBalootCommodity(int commodityId) throws Exception{
+
+    public Commodity getBalootCommodity(int commodityId) throws Exception {
         if(!commodityExists(commodityId))
             throw new CommodityNotExistsException();
         return balootCommodities.get(commodityId);
     }
 
+    public Provider getBalootProvider(int providerId) throws Exception {
+        if(!providerExists(providerId))
+            throw new ProviderNotExistsException();
+        return balootProviders.get(providerId);
+    }
+
     public Map<String, User> getBalootUsers() {
         return balootUsers;
     }
+
     public Map<Integer, Commodity> getBalootCommodities() {
         return balootCommodities;
     }
+
     public Map<Integer, Provider> getBalootProviders() {
         return balootProviders;
     }
+
     public Map<Integer, Comment> getBalootComments() {
         return balootComments;
     }
+
     public Map<String, Rating> getBalootRatings() {
         return balootRatings;
     }
+
     public Map<String, Category> getBalootCategorySections() {
         return balootCategorySections;
     }
+
     public String checkUserCmd(String userInput) {
 
         String userCmd, userData;

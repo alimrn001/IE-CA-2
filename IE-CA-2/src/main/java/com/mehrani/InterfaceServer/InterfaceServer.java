@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import com.mehrani.Baloot.*;
 import com.mehrani.Baloot.Exceptions.CommodityNotExistsException;
 import com.mehrani.Baloot.Exceptions.NegativeCreditAddingException;
+import com.mehrani.Baloot.Exceptions.ProviderNotExistsException;
 import com.mehrani.Baloot.Exceptions.UserNotExistsException;
 import com.mehrani.HTTPReqHandler.HTTPReqHandler;
 import io.javalin.Javalin;
@@ -45,6 +46,7 @@ public class InterfaceServer {
     public Baloot getBaloot() {
         return baloot;
     }
+
     public void runServer(int port) throws Exception {
         app = Javalin.create().start(port);
 
@@ -55,6 +57,7 @@ public class InterfaceServer {
             catch(Exception e) {
                 System.out.println(e.getMessage());
                 ctx.html(getHtmlContents("404.html"));
+                //ctx.status(404);
             }
         });
 
@@ -139,12 +142,37 @@ public class InterfaceServer {
                 //cannot add non-double value !!
             }
         });
+
+        app.get("providers/{provider_id}", ctx -> {
+           try {
+               ctx.html(createProviderHtmlPage(Integer.parseInt(ctx.pathParam("provider_id"))));
+           }
+           catch(ProviderNotExistsException e) {
+               ctx.html(getHtmlContents("404.html"));
+               System.out.println(e.getMessage());
+               //ctx.status(404);
+           }
+           catch(NumberFormatException e) {
+               ctx.html(getHtmlContents("403.html"));
+               ctx.status(403);
+           }
+        });
+
+        app.get("commodities/", ctx -> {
+           try {
+               ctx.html(createCommoditiesListPage(baloot.getBalootCommodities()));
+           }
+           catch(Exception e) {
+               System.out.println(e.getMessage());
+           }
+        });
     }
 
     private String getHtmlContents(String fileName) throws Exception {
         File file = new File(Resources.getResource("templates/" + fileName).toURI());
         return FileUtils.readFileToString(file, StandardCharsets.UTF_8);
     }
+
     private String createUserHtmlPage(String username) throws Exception {
         String userPageHtmlStr = getHtmlContents("userPages/UserInfo.html");
         User user = baloot.getBalootUser(username);
@@ -162,7 +190,8 @@ public class InterfaceServer {
         String buyListItem = getHtmlContents("userPages/UserBuyListItem.html");
         for(Integer buyListItemId : baloot.getBalootUsers().get(username).getBuyList()) {
             userData = new HashMap<>();
-            Commodity commodity = baloot.getBalootCommodities().get(buyListItemId);
+            //Commodity commodity = baloot.getBalootCommodities().get(buyListItemId);
+            Commodity commodity = baloot.getBalootCommodity(buyListItemId);
             userData.put("Username", user.getUsername()); // for removing from buy list we need username to generate url
             userData.put("Id", Integer.toString(commodity.getId()));
             userData.put("Name", commodity.getName());
@@ -180,7 +209,8 @@ public class InterfaceServer {
         String purchasedListItem = getHtmlContents("userPages/UserPurchasedListItem.html");
         for(Integer purchasedListItemId : baloot.getBalootUsers().get(username).getPurchasedList()) {
             userData = new HashMap<>();
-            Commodity commodity = baloot.getBalootCommodities().get(purchasedListItemId);
+            //Commodity commodity = baloot.getBalootCommodities().get(purchasedListItemId);
+            Commodity commodity = baloot.getBalootCommodity(purchasedListItemId);
             userData.put("Id", Integer.toString(commodity.getId()));
             userData.put("Name", commodity.getName());
             userData.put("ProviderId", Integer.toString(commodity.getProviderId()));
@@ -193,6 +223,53 @@ public class InterfaceServer {
         userPageHtmlStr += getHtmlContents("userPages/userPurchasedListEnd.html");
         return userPageHtmlStr;
     }
+
+    private String createProviderHtmlPage(int providerId) throws Exception {
+        String providerHtmlPageStr = getHtmlContents("providerPages/ProviderInfo.html");
+        Provider provider = baloot.getBalootProvider(providerId);
+
+        HashMap<String, String> providerData = new HashMap<>();
+        providerData.put("Id", String.valueOf(provider.getId()));
+        providerData.put("Name", provider.getName());
+        providerData.put("RegistryDate", provider.getRegistryDate().toString());
+        providerHtmlPageStr = htmlHandler.fillTemplatePage(providerHtmlPageStr, providerData);
+        String buyListItem = getHtmlContents("providerPages/ProviderCommodityItem.html");
+
+        for(Integer providerCommodityId : provider.getCommoditiesProvided()) {
+            providerData = new HashMap<>();
+            Commodity commodity = baloot.getBalootCommodity(providerCommodityId);
+            providerData.put("Id", Integer.toString(commodity.getId()));
+            providerData.put("Name", commodity.getName());
+            providerData.put("Price", Double.toString(commodity.getPrice()));
+            providerData.put("Categories", commodity.getCategories().toString());
+            providerData.put("Rating", Double.toString(commodity.getRating()));
+            providerData.put("InStock", Integer.toString(commodity.getInStock()));
+            providerHtmlPageStr += htmlHandler.fillTemplatePage(buyListItem, providerData);
+        }
+        providerHtmlPageStr += getHtmlContents("providerPages/ProviderEnd.html");
+        return providerHtmlPageStr;
+    }
+
+    private String createCommoditiesListPage(Map<Integer, Commodity> commoditiesList) throws Exception {
+        String commoditiesListHtmlPageStr = getHtmlContents("commodityPages/CommoditiesListStart.html");
+        String commodityItem = getHtmlContents("commodityPages/CommoditiesListItem.html");
+
+        for(Map.Entry<Integer, Commodity> commoditiesSetEntry : commoditiesList.entrySet()) {
+            HashMap<String, String> commodityData = new HashMap<>();
+            commodityData.put("Id", String.valueOf(commoditiesSetEntry.getValue().getId()));
+            commodityData.put("Name", commoditiesSetEntry.getValue().getName());
+            commodityData.put("ProviderId", Integer.toString(commoditiesSetEntry.getValue().getProviderId()));
+            commodityData.put("Price", Double.toString(commoditiesSetEntry.getValue().getPrice()));
+            commodityData.put("Categories", commoditiesSetEntry.getValue().getCategories().toString());
+            commodityData.put("Rating", Double.toString(commoditiesSetEntry.getValue().getRating()));
+            commodityData.put("InStock", Integer.toString(commoditiesSetEntry.getValue().getInStock()));
+            commoditiesListHtmlPageStr += htmlHandler.fillTemplatePage(commodityItem, commodityData);
+        }
+
+        commoditiesListHtmlPageStr += getHtmlContents("commodityPages/CommoditiesListEnd.html");
+        return commoditiesListHtmlPageStr;
+    }
+
     public void retrieveUsersDataFromAPI(String url) throws Exception {
         String userDataJsonStr = httpReqHandler.httpGetRequest(url);
         Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
@@ -202,6 +279,7 @@ public class InterfaceServer {
             baloot.addUser(user);
         System.out.println("Total users in baloot : " + baloot.getBalootUsers().size());
     }
+
     public void retrieveProvidersDataFromAPI(String url) throws Exception {
         String providerDataJsonStr = httpReqHandler.httpGetRequest(url);
         Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
@@ -211,6 +289,7 @@ public class InterfaceServer {
             baloot.addProvider(provider);
         System.out.println("Total providers in baloot : " + baloot.getBalootProviders().size());
     }
+
     public void retrieveCommoditiesDataFromAPI(String url) throws Exception {
         String commodityDataJsonStr = httpReqHandler.httpGetRequest(url);
         Gson gson = new GsonBuilder().create();
@@ -232,6 +311,7 @@ public class InterfaceServer {
 //        }
 
     }
+
     public void retrieveCommentsDataFromAPI(String url) throws Exception {
         String commentDataJsonStr = httpReqHandler.httpGetRequest(url);
         Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();

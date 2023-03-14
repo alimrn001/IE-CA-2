@@ -12,6 +12,7 @@ com/mehrani/Baloot/Provider.class
 com/mehrani/HTTPReqHandler/HTTPReqHandler.class
 com/mehrani/InterfaceServer/InterfaceServer$2.class
 com/mehrani/Baloot/LocalDateAdapter.class
+com/mehrani/Baloot/Exceptions/ProviderNotExistsException.class
 com/mehrani/Baloot/Rating.class
 com/mehrani/Baloot/Baloot.class
 com/mehrani/Baloot/User.class

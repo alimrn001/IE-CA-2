@@ -7,6 +7,7 @@
 /home/mehrani/Desktop/IE-CA#2/IE-CA-2/IE-CA-2/src/main/java/com/mehrani/Baloot/Exceptions/NegativeCreditAddingException.java
 /home/mehrani/Desktop/IE-CA#2/IE-CA-2/IE-CA-2/src/main/java/com/mehrani/Baloot/Exceptions/NotEnoughCreditException.java
 /home/mehrani/Desktop/IE-CA#2/IE-CA-2/IE-CA-2/src/main/java/com/mehrani/Baloot/Provider.java
+/home/mehrani/Desktop/IE-CA#2/IE-CA-2/IE-CA-2/src/main/java/com/mehrani/Baloot/Exceptions/ProviderNotExistsException.java
 /home/mehrani/Desktop/IE-CA#2/IE-CA-2/IE-CA-2/src/main/java/com/mehrani/Baloot/Rating.java
 /home/mehrani/Desktop/IE-CA#2/IE-CA-2/IE-CA-2/src/main/java/com/mehrani/Baloot/Response.java
 /home/mehrani/Desktop/IE-CA#2/IE-CA-2/IE-CA-2/src/main/java/com/mehrani/Baloot/Category.java
