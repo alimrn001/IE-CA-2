@@ -2,6 +2,7 @@ package com.mehrani.Baloot;
 
 import com.google.gson.*;
 import com.mehrani.Baloot.Exceptions.CommodityNotExistsException;
+import com.mehrani.Baloot.Exceptions.NegativeCreditAddingException;
 import com.mehrani.Baloot.Exceptions.NotEnoughCreditException;
 import com.mehrani.Baloot.Exceptions.UserNotExistsException;
 
@@ -200,6 +201,12 @@ public class Baloot {
         balootUsers.get(username).purchaseBuyList(totalPurchasePrice);
         for(Integer buyListItemId : userBuyList)
             balootCommodities.get(buyListItemId).reduceInStock(1);
+    }
+    public void addCreditToUser(String username, double credit) throws Exception {
+        User user = getBalootUser(username);
+        if(credit <= 0)
+            throw new NegativeCreditAddingException();
+        user.addCredit(credit);
     }
     public String getCommoditiesByCategory(String category) {
         Response response = new Response();

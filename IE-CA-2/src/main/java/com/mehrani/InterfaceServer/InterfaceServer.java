@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.mehrani.Baloot.*;
 import com.mehrani.Baloot.Exceptions.CommodityNotExistsException;
+import com.mehrani.Baloot.Exceptions.NegativeCreditAddingException;
 import com.mehrani.Baloot.Exceptions.UserNotExistsException;
 import com.mehrani.HTTPReqHandler.HTTPReqHandler;
 import io.javalin.Javalin;
@@ -93,23 +94,49 @@ public class InterfaceServer {
                 ctx.html(getHtmlContents("200.html"));
                 ctx.status(200);
             }
-            catch (UserNotExistsException e) {
+            catch(UserNotExistsException e) {
                 ctx.html(getHtmlContents("404.html"));
                 System.out.println(e.getMessage());
                 ctx.status(404); //needed ??
                 // can add additional features here
             }
-            catch (CommodityNotExistsException e) {
+            catch(CommodityNotExistsException e) {
                 ctx.html(getHtmlContents("404.html"));
                 System.out.println(e.getMessage());
                 ctx.status(404); //needed ??
                 // add additional features here
             }
-            catch (NumberFormatException e) {
+            catch(NumberFormatException e) {
                 System.out.println(e.getMessage());
                 ctx.html(getHtmlContents("404.html"));
                 ctx.status(404); //needed ??
                 // can use this to avoid having id as non-int value
+            }
+        });
+
+        app.get("addCredit/{user_id}/{credit}", ctx -> {
+            try {
+                String username = ctx.pathParam("user_id");
+                double credit = Double.parseDouble(ctx.pathParam("credit"));
+                baloot.addCreditToUser(username, credit);
+                ctx.html(getHtmlContents("200.html"));
+                ctx.status(200);
+            }
+            catch(UserNotExistsException e) {
+                ctx.html(getHtmlContents("404.html"));
+                System.out.println(e.getMessage());
+                ctx.status(404);
+            }
+            catch(NegativeCreditAddingException e) {
+                ctx.html(getHtmlContents("403.html"));
+                System.out.println(e.getMessage());
+                ctx.status(403);
+            }
+            catch(NumberFormatException e) {
+                ctx.html(getHtmlContents("403.html"));
+                System.out.println(e.getMessage());
+                ctx.status(403);
+                //cannot add non-double value !!
             }
         });
     }
