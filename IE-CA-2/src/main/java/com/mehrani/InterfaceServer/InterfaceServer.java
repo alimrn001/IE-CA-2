@@ -182,27 +182,27 @@ public class InterfaceServer {
         });
 
         app.get("providers/{provider_id}", ctx -> {
-           try {
-               ctx.html(createProviderHtmlPage(Integer.parseInt(ctx.pathParam("provider_id"))));
-           }
-           catch(ProviderNotExistsException e) {
-               ctx.html(getHtmlContents("404.html"));
-               System.out.println(e.getMessage());
-               //ctx.status(404);
-           }
-           catch(NumberFormatException e) {
-               ctx.html(getHtmlContents("403.html"));
-               ctx.status(403);
-           }
+            try {
+                ctx.html(createProviderHtmlPage(Integer.parseInt(ctx.pathParam("provider_id"))));
+            }
+            catch(ProviderNotExistsException e) {
+                ctx.html(getHtmlContents("404.html"));
+                System.out.println(e.getMessage());
+                //ctx.status(404);
+            }
+            catch(NumberFormatException e) {
+                ctx.html(getHtmlContents("403.html"));
+                ctx.status(403);
+            }
         });
 
         app.get("commodities/", ctx -> {
-           try {
-               ctx.html(createCommoditiesListHtmlPage(baloot.getBalootCommodities()));
-           }
-           catch(Exception e) {
-               System.out.println(e.getMessage());
-           }
+            try {
+                ctx.html(createCommoditiesListHtmlPage(baloot.getBalootCommodities()));
+            }
+            catch(Exception e) {
+                System.out.println(e.getMessage());
+            }
         });
 
         app.get("commodities/{commodity_id}", ctx -> {
@@ -224,6 +224,7 @@ public class InterfaceServer {
             try {
                 String category = ctx.pathParam("categories");
                 ctx.html(createCommoditiesListHtmlPage(baloot.getCommoditiesByCategory(category)));
+                ctx.status(202);
             }
             catch(Exception e) {
                 System.out.println(e.getMessage());
@@ -231,18 +232,47 @@ public class InterfaceServer {
         });
 
         app.get("commodities/search/{start_price}/{end_price}", ctx -> {
-           try {
-               int startPrice = Integer.parseInt(ctx.pathParam("start_price"));
-               int endPrice = Integer.parseInt(ctx.pathParam("end_price"));
-               ctx.html(createCommoditiesListHtmlPage(baloot.getCommoditiesByPriceRange(startPrice, endPrice)));
-           }
-           catch (NumberFormatException e) {
-               ctx.html(getHtmlContents("404.html"));
-               ctx.status(404);
-           }
-           catch(Exception e) {
-               System.out.println(e.getMessage());
-           }
+            try {
+                int startPrice = Integer.parseInt(ctx.pathParam("start_price"));
+                int endPrice = Integer.parseInt(ctx.pathParam("end_price"));
+                ctx.html(createCommoditiesListHtmlPage(baloot.getCommoditiesByPriceRange(startPrice, endPrice)));
+                ctx.status(200);
+            }
+            catch (NumberFormatException e) {
+                ctx.html(getHtmlContents("404.html"));
+                ctx.status(404);
+            }
+            catch(Exception e) {
+                System.out.println(e.getMessage());
+            }
+        });
+
+        app.get("rateCommodity/{username}/{commodityId}/{rate}", ctx -> {
+            try {
+                String username = ctx.pathParam("username");
+                int commodityId = Integer.parseInt(ctx.pathParam("commodityId"));
+                int rating = Integer.parseInt(ctx.pathParam("rate"));
+                baloot.addRating(username, commodityId, rating);
+                ctx.html(getHtmlContents("200.html")); //reloading this page won't change rating
+                ctx.status(202);
+            }
+            catch(UserNotExistsException e) {
+                ctx.html(getHtmlContents("404.html"));
+                ctx.status(404);
+               // to handle username problems
+            }
+            catch(CommodityNotExistsException e) {
+                ctx.html(getHtmlContents("404.html"));
+                ctx.status(404);
+               // to handle commodityID problems
+            }
+            catch(NumberFormatException e) {
+                ctx.html(getHtmlContents("404.html"));
+                ctx.status(404);
+            }
+            catch(Exception e) {
+                System.out.println(e.getMessage());
+            }
         });
 
     }

@@ -350,33 +350,24 @@ public class Baloot {
         return gson.toJson(responseObject);
     }
 
-    public String addRating(Rating rating) throws Exception {
-        Response response = new Response();
-        Gson gsonRating = new GsonBuilder().create();
-        if(rating.getScore() > 10 || rating.getScore() < 1) {
-            response.setSuccess(false);
-            response.setData(error.getRatingOutOfRange(rating.getScore()));
-            throw new Exception(gsonRating.toJson(response));
+    public void addRating(String username, int commodityId, int rate) throws Exception {
+        User user = getBalootUser(username);
+        if(!commodityExists(commodityId))
+            throw new CommodityNotExistsException();
+        if(rate > 10 || rate < 1)
+            throw new RatingOutOfRangeException();
+
+        String ratingPrimaryKey = username + "_" + commodityId;
+        Rating rating = new Rating();
+        rating.setData(username, commodityId, rate);
+        if(!balootRatings.containsKey(ratingPrimaryKey)) {
+            balootCommodities.get(commodityId).addNewRating(rate);
+            balootRatings.put(ratingPrimaryKey, rating);
+            return;
         }
-        else if(!userExists(rating.getUsername())) {
-            response.setSuccess(false);
-            response.setData(error.getUserNotExists());
-            throw new Exception(gsonRating.toJson(response));
-        }
-        else if(!commodityExists(rating.getCommodityId())) {
-            response.setSuccess(false);
-            response.setData(error.getCommodityNotExists());
-            throw new Exception(gsonRating.toJson(response));
-        }
-        else {
-            String ratingKey = rating.getUsername() + "_" + rating.getCommodityId();
-            if(!balootRatings.containsKey(ratingKey))
-                balootCommodities.get(rating.getCommodityId()).addNewRating(rating.getScore());
-            balootRatings.put(ratingKey, rating);
-            response.setSuccess(true);
-            response.setData("");
-            return gsonRating.toJson(response);
-        }
+        int previousRate = balootRatings.get(ratingPrimaryKey).getScore();
+        balootCommodities.get(commodityId).updateUserRating(previousRate, rate);
+        balootRatings.put(ratingPrimaryKey, rating);
     }
 
     public User getBalootUser(String username) throws Exception {

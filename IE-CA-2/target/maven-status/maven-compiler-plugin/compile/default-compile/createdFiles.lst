@@ -9,6 +9,7 @@ com/mehrani/Baloot/Baloot.class
 com/mehrani/InterfaceServer/InterfaceServer.class
 com/mehrani/InterfaceServer/InterfaceServer$4.class
 com/mehrani/Baloot/Exceptions/ItemNotAvailableInStockException.class
+com/mehrani/Baloot/Exceptions/RatingOutOfRangeException.class
 com/mehrani/Baloot/Comment.class
 com/mehrani/Baloot/Exceptions/UserNotExistsException.class
 com/mehrani/Baloot/Category.class
