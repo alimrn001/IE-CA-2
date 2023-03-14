@@ -6,9 +6,11 @@ com/mehrani/Baloot/Exceptions/NegativeCreditAddingException.class
 com/mehrani/Baloot/Exceptions/NotEnoughCreditException.class
 com/mehrani/Baloot/Response.class
 com/mehrani/Baloot/Exceptions/CommodityNotExistsException.class
+com/mehrani/Baloot/Exceptions/ItemNotInBuyListForRemovingException.class
 com/mehrani/Main.class
 com/mehrani/Baloot/Commodity.class
 com/mehrani/Baloot/Provider.class
+com/mehrani/Baloot/Exceptions/ItemAlreadyExistsInBuyListException.class
 com/mehrani/HTTPReqHandler/HTTPReqHandler.class
 com/mehrani/InterfaceServer/InterfaceServer$2.class
 com/mehrani/Baloot/LocalDateAdapter.class
@@ -18,6 +20,7 @@ com/mehrani/Baloot/Baloot.class
 com/mehrani/Baloot/User.class
 com/mehrani/InterfaceServer/InterfaceServer.class
 com/mehrani/InterfaceServer/InterfaceServer$4.class
+com/mehrani/Baloot/Exceptions/ItemNotAvailableInStockException.class
 com/mehrani/Baloot/Comment.class
 com/mehrani/InterfaceServer/InterfaceServer$3.class
 com/mehrani/Baloot/Error.class

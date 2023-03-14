@@ -149,50 +149,67 @@ public class Baloot {
         return gsonResponse.toJson(response);
     }
 
-    public String addRemoveBuyList(String username, int commodityId, boolean isAdding) throws Exception {
-        Response response = new Response();
-        Gson gsonaddRemove = new GsonBuilder().create();
-        if(!userExists(username)) {
-            response.setSuccess(false);
-            response.setData(error.getUserNotExists());
-            throw new Exception(gsonaddRemove.toJson(response));
-        }
-        if(!commodityExists(commodityId)) {
-            response.setSuccess(false);
-            response.setData(error.getCommodityNotExists());
-            throw new Exception(gsonaddRemove.toJson(response));
-        }
-        else if(balootCommodities.get(commodityId).getInStock()==0 && isAdding) {
-            response.setSuccess(false);
-            response.setData(error.getProductNotInStorage());
-            throw new Exception(gsonaddRemove.toJson(response));
-        }
-        if(balootUsers.get(username).itemExistsInBuyList(commodityId)) {
-            if(isAdding) {
-                response.setSuccess(false);
-                response.setData(error.getProductAlreadyExistsInBuyList());
-                throw new Exception(gsonaddRemove.toJson(response));
-            }
-            else {
-                balootUsers.get(username).removeFromBuyList(commodityId);
-                balootCommodities.get(commodityId).reduceInStock(-1);
-                response.setSuccess(true);
-                response.setData("");
-                return gsonaddRemove.toJson(response);
-            }
+    public void addRemoveBuyList(String username, int commodityId, boolean isAdding) throws Exception {
+        User user = getBalootUser(username);
+        Commodity commodity = getBalootCommodity(commodityId);
+        if(commodity.getInStock()==0 && isAdding)
+            throw new ItemNotAvailableInStockException();
+        if(user.itemExistsInBuyList(commodityId)) {
+            if(isAdding)
+                throw new ItemAlreadyExistsInBuyListException();
+            user.removeFromBuyList(commodityId);
+            return;
         }
         else {
-            if(!isAdding) {
-                response.setSuccess(false);
-                response.setData(error.getProductNotInBuyList());
-                throw new Exception(gsonaddRemove.toJson(response));
+            if(isAdding) {
+                user.addToBuyList(commodityId);
+                return;
             }
+            throw new ItemNotInBuyListForRemovingException();
         }
-        response.setSuccess(true);
-        response.setData("");
-        balootUsers.get(username).addToBuyList(commodityId);
-        //balootCommodities.get(commodityId).reduceInStock(1);
-        return gsonaddRemove.toJson(response);
+//        Response response = new Response();
+//        Gson gsonaddRemove = new GsonBuilder().create();
+//        if(!userExists(username)) {
+//            response.setSuccess(false);
+//            response.setData(error.getUserNotExists());
+//            throw new Exception(gsonaddRemove.toJson(response));
+//        }
+//        if(!commodityExists(commodityId)) {
+//            response.setSuccess(false);
+//            response.setData(error.getCommodityNotExists());
+//            throw new Exception(gsonaddRemove.toJson(response));
+//        }
+//        else if(balootCommodities.get(commodityId).getInStock()==0 && isAdding) {
+//            response.setSuccess(false);
+//            response.setData(error.getProductNotInStorage());
+//            throw new Exception(gsonaddRemove.toJson(response));
+//        }
+//        if(balootUsers.get(username).itemExistsInBuyList(commodityId)) {
+//            if(isAdding) {
+//                response.setSuccess(false);
+//                response.setData(error.getProductAlreadyExistsInBuyList());
+//                throw new Exception(gsonaddRemove.toJson(response));
+//            }
+//            else {
+//                balootUsers.get(username).removeFromBuyList(commodityId);
+//                balootCommodities.get(commodityId).reduceInStock(-1);
+//                response.setSuccess(true);
+//                response.setData("");
+//                return gsonaddRemove.toJson(response);
+//            }
+//        }
+//        else {
+//            if(!isAdding) {
+//                response.setSuccess(false);
+//                response.setData(error.getProductNotInBuyList());
+//                throw new Exception(gsonaddRemove.toJson(response));
+//            }
+//        }
+//        response.setSuccess(true);
+//        response.setData("");
+//        balootUsers.get(username).addToBuyList(commodityId);
+//        //balootCommodities.get(commodityId).reduceInStock(1);
+//        return gsonaddRemove.toJson(response);
     }
 
     public void purchaseUserBuyList(String username) throws Exception {
@@ -448,24 +465,24 @@ public class Baloot {
                     return e.getMessage();
                 }
             }
-            case "addToBuyList" -> {
-                try {
-                    JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
-                    return addRemoveBuyList(jsonObject.get("username").getAsString(), jsonObject.get("commodityId").getAsInt(), true);
-                }
-                catch (Exception e) {
-                    return e.getMessage();
-                }
-            }
-            case "removeFromBuyList" -> {
-                try {
-                    JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
-                    return addRemoveBuyList(jsonObject.get("username").getAsString(), jsonObject.get("commodityId").getAsInt(), false);
-                }
-                catch (Exception e) {
-                    return e.getMessage();
-                }
-            }
+//            case "addToBuyList" -> {
+//                try {
+//                    JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
+//                    return addRemoveBuyList(jsonObject.get("username").getAsString(), jsonObject.get("commodityId").getAsInt(), true);
+//                }
+//                catch (Exception e) {
+//                    return e.getMessage();
+//                }
+//            }
+//            case "removeFromBuyList" -> {
+//                try {
+//                    JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
+//                    return addRemoveBuyList(jsonObject.get("username").getAsString(), jsonObject.get("commodityId").getAsInt(), false);
+//                }
+//                catch (Exception e) {
+//                    return e.getMessage();
+//                }
+//            }
             case "addCommodity" -> {
                 try {
                     Gson gson_ = new GsonBuilder().create();

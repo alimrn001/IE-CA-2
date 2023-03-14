@@ -4,10 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.mehrani.Baloot.*;
-import com.mehrani.Baloot.Exceptions.CommodityNotExistsException;
-import com.mehrani.Baloot.Exceptions.NegativeCreditAddingException;
-import com.mehrani.Baloot.Exceptions.ProviderNotExistsException;
-import com.mehrani.Baloot.Exceptions.UserNotExistsException;
+import com.mehrani.Baloot.Exceptions.*;
 import com.mehrani.HTTPReqHandler.HTTPReqHandler;
 import io.javalin.Javalin;
 
@@ -58,6 +55,43 @@ public class InterfaceServer {
                 System.out.println(e.getMessage());
                 ctx.html(getHtmlContents("404.html"));
                 //ctx.status(404);
+            }
+        });
+
+        app.post("users/{user_id}", ctx -> {
+            try {
+                String commodityIdToBeRemoved = ctx.formParam("commodityId");
+                String username = ctx.pathParam("user_id");
+                String usernamePurchase = ctx.formParam("userIdPurchase");
+                System.out.println(usernamePurchase + " is username to make purchase");
+                System.out.println(username + " is username.");
+                System.out.println(commodityIdToBeRemoved + " is to be removed.");
+                if(commodityIdToBeRemoved != null) {
+                    baloot.addRemoveBuyList(username, Integer.parseInt(commodityIdToBeRemoved), false);
+                    ctx.redirect(""); //comment this line and uncomment two other parts to show response
+                    //ctx.html(getHtmlContents("200.html"));
+                    //ctx.status(200);
+                }
+                if(usernamePurchase != null) {
+                    baloot.purchaseUserBuyList(usernamePurchase);
+                    ctx.html(getHtmlContents("200.html"));
+                    ctx.status(200);
+                }
+            }
+
+            catch(ItemNotInBuyListForRemovingException e) {
+                ctx.html(getHtmlContents("403.html"));
+                ctx.status(403);
+            }
+
+            catch(NotEnoughCreditException e) {
+                ctx.html(getHtmlContents("403.html"));
+                ctx.status(403);
+                //might design a new "function failed" page for it
+            }
+
+            catch(Exception e) {
+                System.out.println(e.getMessage());
             }
         });
 
@@ -160,11 +194,20 @@ public class InterfaceServer {
 
         app.get("commodities/", ctx -> {
            try {
-               ctx.html(createCommoditiesListPage(baloot.getBalootCommodities()));
+               ctx.html(createCommoditiesListHtmlPage(baloot.getBalootCommodities()));
            }
            catch(Exception e) {
                System.out.println(e.getMessage());
            }
+        });
+
+        app.get("commodities/{commodity_id}", ctx -> {
+            try {
+                ctx.html(createCommodityItemHtmlPage(Integer.parseInt(ctx.pathParam("commodity_id"))));
+            }
+            catch(CommodityNotExistsException e) {
+
+            }
         });
     }
 
@@ -250,7 +293,7 @@ public class InterfaceServer {
         return providerHtmlPageStr;
     }
 
-    private String createCommoditiesListPage(Map<Integer, Commodity> commoditiesList) throws Exception {
+    private String createCommoditiesListHtmlPage(Map<Integer, Commodity> commoditiesList) throws Exception {
         String commoditiesListHtmlPageStr = getHtmlContents("commodityPages/CommoditiesListStart.html");
         String commodityItem = getHtmlContents("commodityPages/CommoditiesListItem.html");
 
@@ -268,6 +311,12 @@ public class InterfaceServer {
 
         commoditiesListHtmlPageStr += getHtmlContents("commodityPages/CommoditiesListEnd.html");
         return commoditiesListHtmlPageStr;
+    }
+
+    private String createCommodityItemHtmlPage(int commodityId) throws Exception {
+        String commodityItemHtmlPageStr = "";
+
+        return commodityItemHtmlPageStr;
     }
 
     public void retrieveUsersDataFromAPI(String url) throws Exception {
