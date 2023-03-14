@@ -219,6 +219,32 @@ public class InterfaceServer {
                 //for wrong input
             }
         });
+
+        app.get("commodities/search/{categories}", ctx -> {
+            try {
+                String category = ctx.pathParam("categories");
+                ctx.html(createCommoditiesListHtmlPage(baloot.getCommoditiesByCategory(category)));
+            }
+            catch(Exception e) {
+                System.out.println(e.getMessage());
+            }
+        });
+
+        app.get("commodities/search/{start_price}/{end_price}", ctx -> {
+           try {
+               int startPrice = Integer.parseInt(ctx.pathParam("start_price"));
+               int endPrice = Integer.parseInt(ctx.pathParam("end_price"));
+               ctx.html(createCommoditiesListHtmlPage(baloot.getCommoditiesByPriceRange(startPrice, endPrice)));
+           }
+           catch (NumberFormatException e) {
+               ctx.html(getHtmlContents("404.html"));
+               ctx.status(404);
+           }
+           catch(Exception e) {
+               System.out.println(e.getMessage());
+           }
+        });
+
     }
 
     private String getHtmlContents(String fileName) throws Exception {

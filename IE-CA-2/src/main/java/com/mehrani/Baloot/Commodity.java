@@ -58,7 +58,7 @@ public class Commodity {
     public void reduceInStock(int amount) {
         this.inStock -= amount;
     }
-    public void addNewRating(double newRating) {
+    public void addNewRating(int newRating) {
         this.rating = (((this.rating*this.numOfRatings) + newRating)/(this.numOfRatings+1));
         this.numOfRatings ++;
     }

@@ -40,7 +40,7 @@ public class Baloot {
     }
 
     public void updateCategorySection(String categoryName, int commodityId) {
-        if(balootCategorySections.containsKey(categoryName)) {
+        if(categoryExists(categoryName)) {
             balootCategorySections.get(categoryName).addCommodityToCategory(commodityId);
         }
         else {
@@ -244,37 +244,26 @@ public class Baloot {
         user.addCredit(credit);
     }
 
-    public String getCommoditiesByCategory(String category) {
-        Response response = new Response();
-        JsonObject responseObject = new JsonObject();
-        JsonObject commoditiesListObject = new JsonObject();
-        if(!categoryExists(category)) {
-            JsonArray emptyCommodityList = new JsonArray();
-            commoditiesListObject.add("commoditiesListByCategory", emptyCommodityList);
-            responseObject.addProperty("success", true);
-            responseObject.add("data", new Gson().toJsonTree(commoditiesListObject));
-            return responseObject.toString();
-        }
+    public Map<Integer, Commodity> getCommoditiesByCategory(String category) {
+        Map<Integer, Commodity> commodities = new HashMap<>();
+        if(!categoryExists(category))
+            return commodities;
 
-        JsonArray commoditiesList = new JsonArray();
-        for (int commId :balootCategorySections.get(category).getCommodities()) {
-            JsonObject commObj = new JsonObject();
-            Commodity commodity = balootCommodities.get(commId);
-            commObj.addProperty("id", commodity.getId());
-            commObj.addProperty("name", commodity.getName());
-            commObj.addProperty("providerId", commodity.getProviderId());
-            commObj.addProperty("price", commodity.getPrice());
-            JsonArray categoriesList = new JsonArray();
-            for(String itemCategory : commodity.getCategories())
-                categoriesList.add(new JsonPrimitive(itemCategory));
-            commObj.add("categories", categoriesList);
-            commObj.addProperty("rating", commodity.getRating());
-            commoditiesList.add(commObj);
+        for(int categoryCommodityID : balootCategorySections.get(category).getCommodities()) {
+            Commodity categoryCommodity = balootCommodities.get(categoryCommodityID);
+            commodities.put(categoryCommodityID, categoryCommodity);
         }
-        commoditiesListObject.add("commoditiesListByCategory", commoditiesList);
-        responseObject.addProperty("success", true);
-        responseObject.add("data", new Gson().toJsonTree(commoditiesListObject));
-        return responseObject.toString();
+        return commodities;
+    }
+
+    public Map<Integer, Commodity> getCommoditiesByPriceRange(int startPrice, int endPrice) {
+        Map<Integer, Commodity> commodities = new HashMap<>();
+        for(Map.Entry<Integer, Commodity> commodityEntry : balootCommodities.entrySet()) {
+            if(commodityEntry.getValue().getPrice() <= endPrice && commodityEntry.getValue().getPrice() >= startPrice) {
+                commodities.put(commodityEntry.getKey(), commodityEntry.getValue());
+            }
+        }
+        return commodities;
     }
 
     public String getCommodityById(int commodityId) throws Exception {
@@ -438,104 +427,104 @@ public class Baloot {
         return balootCategorySections;
     }
 
-    public String checkUserCmd(String userInput) {
-
-        String userCmd, userData;
-        if(!userInput.contains(" ")) {
-            userCmd = userInput;
-            userData = "";
-        }
-        else {
-            userCmd = userInput.substring(0, userInput.indexOf(" "));
-            userData = userInput.substring(userInput.indexOf(" ") + 1);
-        }
-        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
-
-        switch (userCmd) {
-            case "addUser" -> {
-                try {
-                    User user = gson.fromJson(userData, User.class);
-                    return addUser(user);
-                }
-                catch (Exception e) {
-                    return e.getMessage();
-                }
-            }
-            case "rateCommodity" -> {
-                try {
-                    Gson gsonCommodity = new GsonBuilder().create();
-                    Rating rating = gsonCommodity.fromJson(userData, Rating.class);
-                    return addRating(rating);
-                }
-                catch (Exception e) {
-                    return e.getMessage();
-                }
-            }
-            case "addProvider" -> {
-                try {
-                    Provider provider = gson.fromJson(userData, Provider.class);
-                    return addProvider(provider);
-                }
-                catch (Exception e) {
-                    return e.getMessage();
-                }
-            }
-//            case "addToBuyList" -> {
+//    public String checkUserCmd(String userInput) {
+//
+//        String userCmd, userData;
+//        if(!userInput.contains(" ")) {
+//            userCmd = userInput;
+//            userData = "";
+//        }
+//        else {
+//            userCmd = userInput.substring(0, userInput.indexOf(" "));
+//            userData = userInput.substring(userInput.indexOf(" ") + 1);
+//        }
+//        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
+//
+//        switch (userCmd) {
+//            case "addUser" -> {
 //                try {
-//                    JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
-//                    return addRemoveBuyList(jsonObject.get("username").getAsString(), jsonObject.get("commodityId").getAsInt(), true);
+//                    User user = gson.fromJson(userData, User.class);
+//                    return addUser(user);
 //                }
 //                catch (Exception e) {
 //                    return e.getMessage();
 //                }
 //            }
-//            case "removeFromBuyList" -> {
+//            case "rateCommodity" -> {
 //                try {
-//                    JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
-//                    return addRemoveBuyList(jsonObject.get("username").getAsString(), jsonObject.get("commodityId").getAsInt(), false);
+//                    Gson gsonCommodity = new GsonBuilder().create();
+//                    Rating rating = gsonCommodity.fromJson(userData, Rating.class);
+//                    return addRating(rating);
 //                }
 //                catch (Exception e) {
 //                    return e.getMessage();
 //                }
 //            }
-            case "addCommodity" -> {
-                try {
-                    Gson gson_ = new GsonBuilder().create();
-                    Commodity commodity = gson_.fromJson(userData, Commodity.class);
-                    return addCommodity(commodity);
-                }
-                catch (Exception e) {
-                    return e.getMessage();
-                }
-            }
-            case "getCommodityById" -> {
-                try {
-                    JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
-                    return getCommodityById(jsonObject.get("id").getAsInt());
-                }
-                catch (Exception e) {
-                    return e.getMessage();
-                }
-            }
-            case "getCommoditiesByCategory" -> {
-                JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
-                return getCommoditiesByCategory(jsonObject.get("category").getAsString());
-            }
-            case "getCommoditiesList" -> {
-                return getCommoditiesList();
-            }
-            case "getBuyList" -> {
-                try {
-                    JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
-                    return getBuyList(jsonObject.get("username").getAsString());
-                }
-                catch (Exception e) {
-                    return e.getMessage();
-                }
-            }
-        }
-
-        return "Wrong command!";
-    }
+//            case "addProvider" -> {
+//                try {
+//                    Provider provider = gson.fromJson(userData, Provider.class);
+//                    return addProvider(provider);
+//                }
+//                catch (Exception e) {
+//                    return e.getMessage();
+//                }
+//            }
+////            case "addToBuyList" -> {
+////                try {
+////                    JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
+////                    return addRemoveBuyList(jsonObject.get("username").getAsString(), jsonObject.get("commodityId").getAsInt(), true);
+////                }
+////                catch (Exception e) {
+////                    return e.getMessage();
+////                }
+////            }
+////            case "removeFromBuyList" -> {
+////                try {
+////                    JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
+////                    return addRemoveBuyList(jsonObject.get("username").getAsString(), jsonObject.get("commodityId").getAsInt(), false);
+////                }
+////                catch (Exception e) {
+////                    return e.getMessage();
+////                }
+////            }
+//            case "addCommodity" -> {
+//                try {
+//                    Gson gson_ = new GsonBuilder().create();
+//                    Commodity commodity = gson_.fromJson(userData, Commodity.class);
+//                    return addCommodity(commodity);
+//                }
+//                catch (Exception e) {
+//                    return e.getMessage();
+//                }
+//            }
+//            case "getCommodityById" -> {
+//                try {
+//                    JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
+//                    return getCommodityById(jsonObject.get("id").getAsInt());
+//                }
+//                catch (Exception e) {
+//                    return e.getMessage();
+//                }
+//            }
+//            case "getCommoditiesByCategory" -> {
+//                JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
+//                return getCommoditiesByCategory(jsonObject.get("category").getAsString());
+//            }
+//            case "getCommoditiesList" -> {
+//                return getCommoditiesList();
+//            }
+//            case "getBuyList" -> {
+//                try {
+//                    JsonObject jsonObject = new Gson().fromJson(userData, JsonObject.class);
+//                    return getBuyList(jsonObject.get("username").getAsString());
+//                }
+//                catch (Exception e) {
+//                    return e.getMessage();
+//                }
+//            }
+//        }
+//
+//        return "Wrong command!";
+//    }
 
 }
