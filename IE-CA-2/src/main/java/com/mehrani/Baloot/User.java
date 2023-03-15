@@ -27,6 +27,7 @@ public class User {
 
     private ArrayList<Integer> dislikedComments = new ArrayList<>();
 
+
     public void setUserData(String username, String password, String birthday, String email, String address, double credit) {
         this.username = username;
         this.password = password;

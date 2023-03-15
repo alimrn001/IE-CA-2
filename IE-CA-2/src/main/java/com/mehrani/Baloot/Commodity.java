@@ -4,17 +4,27 @@ import com.google.gson.annotations.Expose;
 import java.util.ArrayList;
 
 public class Commodity {
+
     private int id;
+
     private String name;
+
     private int providerId;
+
     private int price;
+
     private ArrayList<String> categories;
+
     private double rating;
+
     private int inStock;
+
     private int numOfRatings;
+
     private ArrayList<Integer> comments = new ArrayList<>();
 
-    Commodity(int id, String name, int providerId, int price, ArrayList<String> categories, double rating, int inStock) {
+
+    public Commodity(int id, String name, int providerId, int price, ArrayList<String> categories, double rating, int inStock) {
         this.id = id;
         this.name = name;
         this.providerId = providerId;
