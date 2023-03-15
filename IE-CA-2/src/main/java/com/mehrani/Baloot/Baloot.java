@@ -130,7 +130,8 @@ public class Baloot {
     }
 
     public void addRating(String username, int commodityId, int rate) throws Exception {
-        User user = getBalootUser(username);
+        if(!userExists(username))
+            throw new UserNotExistsException();
         if(!commodityExists(commodityId))
             throw new CommodityNotExistsException();
         if(rate > 10 || rate < 1)

@@ -219,6 +219,61 @@ public class InterfaceServer {
             }
         });
 
+        app.post("commodities/{commodity_id}", ctx -> {
+            try {
+                String userId = ctx.formParam("user_id");
+                String commodityRating = ctx.formParam("rateValue");
+                String commodityId = ctx.pathParam("commodity_id");
+                String buyListAdd = ctx.formParam("buyListAdd");
+                String rateCommodity = ctx.formParam("rateCommodity");
+
+                if(buyListAdd != null && userId != null) {
+                    baloot.addRemoveBuyList(userId, Integer.parseInt(commodityId), true);
+                    ctx.html(getHtmlContents("200.html"));
+                }
+                if(commodityRating != null && rateCommodity != null && userId != null) {
+                    if(commodityRating.equals(""))
+                        ctx.html(getHtmlContents("404.html"));
+                    else {
+                        baloot.addRating(userId, Integer.parseInt(commodityId), Integer.parseInt(commodityRating));
+                        ctx.redirect("");
+                    }
+                }
+
+
+//                if(commodityRating != null && userId != null && rateCommodity != null && !commodityRating.equals("")) {
+//                    System.out.println("rating with score :|" + commodityRating + "|");
+//                    System.out.println("user : " + userId + " wants to rate : " + commodityRating);
+//                    baloot.addRating(userId, Integer.parseInt(commodityId), Integer.parseInt(commodityRating));
+//                    ctx.redirect("");
+//                    //ctx.status(200);
+//                }
+//                else if(commodityRating.equals("") && rateCommodity != null) {
+//                    ctx.html("404.html");
+//                }
+
+            }
+            catch (ItemAlreadyExistsInBuyListException e) {
+                ctx.html(getHtmlContents("FunctionFailed.html"));
+            }
+            catch (ItemNotAvailableInStockException e) {
+                ctx.html(getHtmlContents("FunctionFailed.html"));
+            }
+            catch (RatingOutOfRangeException e) {
+                ctx.html(getHtmlContents("FunctionFailed.html"));
+            }
+            catch (UserNotExistsException e) {
+                ctx.html("FunctionFailed.html");
+            }
+            catch (NumberFormatException e) {
+                ctx.html(getHtmlContents("403.html"));
+                // for when input box is empty for rating
+            }
+            catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        });
+
         app.get("commodities/search/{categories}", ctx -> {
             try {
                 String category = ctx.pathParam("categories");
