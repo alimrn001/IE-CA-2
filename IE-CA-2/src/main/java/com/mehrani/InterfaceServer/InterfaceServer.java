@@ -222,36 +222,49 @@ public class InterfaceServer {
         app.post("commodities/{commodity_id}", ctx -> {
             try {
                 String userId = ctx.formParam("user_id");
-                String commodityRating = ctx.formParam("rateValue");
+                String rateValue = ctx.formParam("rateValue");
                 String commodityId = ctx.pathParam("commodity_id");
                 String buyListAdd = ctx.formParam("buyListAdd");
                 String rateCommodity = ctx.formParam("rateCommodity");
+                String likeCommentRequest = ctx.formParam("LikeComment");
+                String dislikeCommentRequest = ctx.formParam("DislikeComment");
+
+                boolean validUsernameIsEntered = (userId != null && !userId.equals(""));
 
                 if(buyListAdd != null && userId != null) {
                     baloot.addRemoveBuyList(userId, Integer.parseInt(commodityId), true);
                     ctx.html(getHtmlContents("200.html"));
                 }
-                if(commodityRating != null && rateCommodity != null && userId != null) {
-                    if(commodityRating.equals(""))
+
+                if(rateValue != null && rateCommodity != null && userId != null) {
+                    if(rateValue.equals(""))
                         ctx.html(getHtmlContents("404.html"));
                     else {
-                        baloot.addRating(userId, Integer.parseInt(commodityId), Integer.parseInt(commodityRating));
+                        baloot.addRating(userId, Integer.parseInt(commodityId), Integer.parseInt(rateValue));
                         ctx.redirect("");
                     }
                 }
 
+                if(validUsernameIsEntered) {
+                    if (likeCommentRequest != null) {
+                        String commentId = ctx.formParam("comment_id");
+                        if(commentId != null) {
+                            baloot.voteComment(userId, Integer.parseInt(commentId), 1);
+                            ctx.redirect("");
+                        }
+                    }
+                    if (dislikeCommentRequest != null) {
+                        String commentId = ctx.formParam("comment_id");
+                        if(commentId != null) {
+                            baloot.voteComment(userId, Integer.parseInt(commentId), -1);
+                            ctx.redirect("");
+                        }
+                    }
+                }
 
-//                if(commodityRating != null && userId != null && rateCommodity != null && !commodityRating.equals("")) {
-//                    System.out.println("rating with score :|" + commodityRating + "|");
-//                    System.out.println("user : " + userId + " wants to rate : " + commodityRating);
-//                    baloot.addRating(userId, Integer.parseInt(commodityId), Integer.parseInt(commodityRating));
-//                    ctx.redirect("");
-//                    //ctx.status(200);
-//                }
-//                else if(commodityRating.equals("") && rateCommodity != null) {
-//                    ctx.html("404.html");
-//                }
-
+                else {
+                    ctx.html(getHtmlContents("403.html"));
+                }
             }
             catch (ItemAlreadyExistsInBuyListException e) {
                 ctx.html(getHtmlContents("FunctionFailed.html"));
@@ -267,7 +280,7 @@ public class InterfaceServer {
             }
             catch (NumberFormatException e) {
                 ctx.html(getHtmlContents("403.html"));
-                // for when input box is empty for rating
+                // for when input box is empty for rating and other errors for string to int conversion
             }
             catch (Exception e) {
                 System.out.println(e.getMessage());
