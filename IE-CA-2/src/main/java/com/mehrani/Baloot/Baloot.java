@@ -10,14 +10,20 @@ import java.util.Map;
 
 
 public class Baloot {
-    private Map<String, User> balootUsers = new HashMap<>();
-    private Map<Integer, Commodity> balootCommodities = new HashMap<>();
-    private Map<Integer, Provider> balootProviders = new HashMap<>();
-    private Map<String, Rating> balootRatings = new HashMap<>();
-    private Map<String, Category> balootCategorySections = new HashMap<>();
-    private Map<Integer, Comment> balootComments = new HashMap<>();
-    private Error error = new Error();
+    private final Map<String, User> balootUsers = new HashMap<>();
+
+    private final Map<Integer, Commodity> balootCommodities = new HashMap<>();
+
+    private final Map<Integer, Provider> balootProviders = new HashMap<>();
+
+    private final Map<String, Rating> balootRatings = new HashMap<>();
+
+    private final Map<String, Category> balootCategorySections = new HashMap<>();
+
+    private final Map<Integer, Comment> balootComments = new HashMap<>();
+
     private int latestCommentID = 0; //comments id start with 1
+
 
     public boolean commodityExists(int commodityId) {
         return balootCommodities.containsKey(commodityId);
@@ -62,27 +68,17 @@ public class Baloot {
         }
     }
 
-    public String addUser(User user) throws Exception {
-        Response response = new Response();
-        Gson gsonProvider = new GsonBuilder().create();
+    public void addUser(User user) throws Exception {
         if(balootUsers.containsKey(user.getUsername())) {
             user.setBuyList(balootUsers.get(user.getUsername()).getBuyList());
             balootUsers.put(user.getUsername(), user);
-            response.setSuccess(true);
-            response.setData("");
-            return gsonProvider.toJson(response);
         }
         else {
             if((user.getUsername().contains("!")) || (user.getUsername().contains("#")) || (user.getUsername().contains("@"))) {
-                response.setSuccess(false);
-                response.setData(error.getUsernameWrongChar());
-                throw new Exception(gsonProvider.toJson(response));
+                throw new UsernameWrongCharacterException();
             }
             else {
                 balootUsers.put(user.getUsername(), user);
-                response.setSuccess(true);
-                response.setData("");
-                return gsonProvider.toJson(response);
             }
         }
     }
@@ -172,7 +168,7 @@ public class Baloot {
 
     public void purchaseUserBuyList(String username) throws Exception {
         if(!userExists(username))
-            throw new Exception(error.getUserNotExists());
+            throw new UserNotExistsException();
 
         ArrayList<Integer> userBuyList = balootUsers.get(username).getBuyList();
         double totalPurchasePrice = 0;
@@ -257,59 +253,6 @@ public class Baloot {
             }
         }
         return commodities;
-    }
-
-    public String getCommodityById(int commodityId) throws Exception {
-        Response response = new Response();
-        Gson gsonObj = new GsonBuilder().create();
-        JsonObject responseObj = new JsonObject();
-        if(!commodityExists(commodityId)) {
-            response.setSuccess(false);
-            response.setData(new Error().getCommodityNotExists());
-            throw new Exception(gsonObj.toJson(response));
-        }
-        Commodity commodity = balootCommodities.get(commodityId);
-        JsonArray commoditiesList = new JsonArray();
-        for(String category : commodity.getCategories())
-            commoditiesList.add(new JsonPrimitive(category));
-
-        JsonObject jsonObj = new JsonObject();
-        jsonObj.addProperty("id", commodity.getId());
-        jsonObj.addProperty("name", commodity.getName());
-        String providerName = balootProviders.get(commodity.getProviderId()).getName();
-        jsonObj.addProperty("provider", providerName);
-        jsonObj.addProperty("price", commodity.getPrice());
-        jsonObj.add("categories", commoditiesList);
-        jsonObj.addProperty("rating", commodity.getRating());
-
-        responseObj.addProperty("success", true);
-        responseObj.add("data", new Gson().toJsonTree(jsonObj));
-        return responseObj.toString();
-    }
-
-    public String getCommoditiesList() {
-        Gson gson = new GsonBuilder().create();
-        JsonObject responseObject = new JsonObject();
-        JsonObject commoditiesListObject = new JsonObject();
-        JsonArray commoditiesList = new JsonArray();
-        for(Commodity commodity : balootCommodities.values()) {
-            JsonObject commObject = new JsonObject();
-            commObject.addProperty("id", commodity.getId());
-            commObject.addProperty("name", commodity.getName());
-            commObject.addProperty("providerId", commodity.getProviderId());
-            commObject.addProperty("price", commodity.getPrice());
-            JsonArray categoryList = new JsonArray();
-            for(String ctgr : commodity.getCategories())
-                categoryList.add(new JsonPrimitive(ctgr));
-            commObject.add("categories", categoryList);
-            commObject.addProperty("rating", commodity.getRating());
-            commoditiesList.add(commObject);
-        }
-
-        commoditiesListObject.add("commoditiesList", commoditiesList);
-        responseObject.addProperty("success", true);
-        responseObject.add("data", new Gson().toJsonTree(commoditiesListObject));
-        return gson.toJson(responseObject);
     }
 
     public String getBuyList(String username) throws Exception {

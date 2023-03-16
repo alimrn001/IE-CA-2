@@ -57,7 +57,6 @@ public class BalootServerTest {
     @Test
     public void addRatingTestWrong() {
         try {
-            System.out.println(baloot.userExists("saied"));
             Assert.assertThrows(RatingOutOfRangeException.class, ()->baloot.addRating("saied", 20, 11));
         }
         catch (Exception e) {
@@ -70,7 +69,7 @@ public class BalootServerTest {
         try {
             baloot.getBalootUser("saied").getBuyList().clear();
             baloot.addRemoveBuyList("saied", 20, true);
-            Assert.assertEquals(1, baloot.getBalootUser("saeid").getBuyList().size());
+            Assert.assertEquals(1, baloot.getBalootUser("saied").getBuyList().size());
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
@@ -129,7 +128,6 @@ public class BalootServerTest {
     @Test
     public void addCreditToUserWrong() {
         try {
-            System.out.println(baloot.userExists("saied"));
             assertThrows(NegativeCreditAddingException.class, () -> baloot.addCreditToUser("saied", -10000));
         }
         catch (Exception e) {

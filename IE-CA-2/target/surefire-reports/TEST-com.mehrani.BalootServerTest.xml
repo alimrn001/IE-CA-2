@@ -62,13 +62,13 @@
     <property name="sun.cpu.endian" value="little"/>
     <property name="sun.stdout.encoding" value="UTF-8"/>
   </properties>
-  <testcase classname="com.mehrani.BalootServerTest" name="removeFromBuyListTestWrong" time="0.003"/>
+  <testcase classname="com.mehrani.BalootServerTest" name="removeFromBuyListTestWrong" time="0.002"/>
   <testcase classname="com.mehrani.BalootServerTest" name="addRatingTestCorrect" time="0.002"/>
-  <testcase classname="com.mehrani.BalootServerTest" name="addCreditToUserWrong" time="0"/>
-  <testcase classname="com.mehrani.BalootServerTest" name="addToBuyListTestWrong" time="0"/>
-  <testcase classname="com.mehrani.BalootServerTest" name="getCommoditiesByPriceRangeTest" time="0.002"/>
+  <testcase classname="com.mehrani.BalootServerTest" name="addCreditToUserWrong" time="0.001"/>
+  <testcase classname="com.mehrani.BalootServerTest" name="addToBuyListTestWrong" time="0.001"/>
+  <testcase classname="com.mehrani.BalootServerTest" name="getCommoditiesByPriceRangeTest" time="0"/>
   <testcase classname="com.mehrani.BalootServerTest" name="addCreditToUserCorrect" time="0"/>
   <testcase classname="com.mehrani.BalootServerTest" name="addRatingTestWrong" time="0"/>
-  <testcase classname="com.mehrani.BalootServerTest" name="addToBuyListTestCorrect" time="0"/>
+  <testcase classname="com.mehrani.BalootServerTest" name="addToBuyListTestCorrect" time="0.001"/>
   <testcase classname="com.mehrani.BalootServerTest" name="removeFromBuyListTestCorrect" time="0"/>
 </testsuite>
