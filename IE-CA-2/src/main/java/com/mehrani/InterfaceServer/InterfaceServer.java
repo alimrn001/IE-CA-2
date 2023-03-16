@@ -65,9 +65,7 @@ public class InterfaceServer {
                 String commodityIdToBeRemoved = ctx.formParam("commodityId");
                 String username = ctx.pathParam("user_id");
                 String usernamePurchase = ctx.formParam("userIdPurchase");
-                System.out.println(usernamePurchase + " is username to make purchase");
-                System.out.println(username + " is username.");
-                System.out.println(commodityIdToBeRemoved + " is to be removed.");
+
                 if(commodityIdToBeRemoved != null) {
                     baloot.addRemoveBuyList(username, Integer.parseInt(commodityIdToBeRemoved), false);
                     ctx.redirect(""); //comment this line and uncomment two other parts to show response
@@ -276,7 +274,7 @@ public class InterfaceServer {
                 ctx.html(getHtmlContents("FunctionFailed.html"));
             }
             catch (UserNotExistsException e) {
-                ctx.html("FunctionFailed.html");
+                ctx.html(getHtmlContents("FunctionFailed.html"));
             }
             catch (NumberFormatException e) {
                 ctx.html(getHtmlContents("403.html"));
@@ -514,7 +512,6 @@ public class InterfaceServer {
         List<User> userList = gson.fromJson(userDataJsonStr, userListType);
         for (User user : userList)
             baloot.addUser(user);
-        System.out.println("Total users in baloot : " + baloot.getBalootUsers().size());
     }
 
     public void retrieveProvidersDataFromAPI(String url) throws Exception {
@@ -524,7 +521,6 @@ public class InterfaceServer {
         List<Provider> providerList = gson.fromJson(providerDataJsonStr, providerListType);
         for(Provider provider : providerList)
             baloot.addProvider(provider);
-        System.out.println("Total providers in baloot : " + baloot.getBalootProviders().size());
     }
 
     public void retrieveCommoditiesDataFromAPI(String url) throws Exception {
@@ -534,19 +530,6 @@ public class InterfaceServer {
         List<Commodity> commodityList = gson.fromJson(commodityDataJsonStr, commodityListType);
         for(Commodity commodity : commodityList)
             baloot.addCommodity(commodity);
-        System.out.println("Total commodities in baloot : " + baloot.getBalootCommodities().size());
-        //System.out.println("Commodities : ");
-//        for(Map.Entry<Integer, Commodity> commodityEntry : baloot.getBalootCommodities().entrySet()) {
-//            System.out.println("id : " + commodityEntry.getValue().getId());
-//            System.out.println("name : " + commodityEntry.getValue().getName());
-//            System.out.println("provider id : " + commodityEntry.getValue().getProviderId());
-//            System.out.println("price : " + commodityEntry.getValue().getPrice());
-//            System.out.println("categories : " + commodityEntry.getValue().getCategories());
-//            System.out.println("rating : " + commodityEntry.getValue().getRating());
-//            System.out.println("in stock : " + commodityEntry.getValue().getInStock());
-//            System.out.println("-------------");
-//        }
-
     }
 
     public void retrieveCommentsDataFromAPI(String url) throws Exception {
@@ -557,19 +540,6 @@ public class InterfaceServer {
         for(Comment comment : commentList)
             baloot.addComment(comment);
 
-        System.out.println("Total comments in baloot : " + baloot.getBalootComments().size());
-        System.out.println("Comments");
-        for(Map.Entry<Integer, Comment> commentEntry : baloot.getBalootComments().entrySet()) {
-            System.out.println("-------------");
-            System.out.println("id : " + commentEntry.getValue().getCommentId());
-            System.out.println("user email : " + commentEntry.getValue().getUserEmail());
-            System.out.println("commodity id : " + commentEntry.getValue().getCommodityId());
-            System.out.println("text : " + commentEntry.getValue().getText());
-            System.out.println("date : " + commentEntry.getValue().getDate().toString());
-            System.out.println("likes : " + commentEntry.getValue().getLikesNo());
-            System.out.println("dislikes : " + commentEntry.getValue().getDislikesNo());
-            System.out.println("neutral votes : " + commentEntry.getValue().getNeutralVotesNo());
-        }
     }
 
 }
