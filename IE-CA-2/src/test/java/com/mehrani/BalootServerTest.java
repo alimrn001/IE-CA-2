@@ -7,6 +7,9 @@ import com.mehrani.Baloot.Exceptions.ItemNotInBuyListForRemovingException;
 import com.mehrani.Baloot.Exceptions.NegativeCreditAddingException;
 import com.mehrani.Baloot.Exceptions.RatingOutOfRangeException;
 import com.mehrani.InterfaceServer.InterfaceServer;
+import kong.unirest.Unirest;
+import kong.unirest.HttpResponse;
+//import org.apache.http.HttpResponse;
 import org.checkerframework.checker.units.qual.A;
 import org.junit.*;
 
@@ -62,6 +65,19 @@ public class BalootServerTest {
         catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    @Test
+    public void addRatingCorrectStatus() {
+        HttpResponse<String> response = Unirest.get("http://localhost:8080/rateCommodity/amir/1/6").asString();
+//        System.out.println(response.getBody().toString());
+        Assert.assertEquals(202, response.getStatus());
+    }
+
+    @Test
+    public void addRatingWrongStatus() {
+        HttpResponse<String> response = Unirest.get("http://localhost:8080/rateCommodity/invalidusername/1/6").asString();
+        Assert.assertEquals(404, response.getStatus());
     }
 
     @Test
@@ -133,6 +149,12 @@ public class BalootServerTest {
         catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    @Test
+    public void getCommoditiesByPriceStatus() {
+        HttpResponse<String> response = Unirest.get("http://localhost:8080/commodities/search/10000/30000").asString();
+        Assert.assertEquals(200, response.getStatus());
     }
 
     @Test
