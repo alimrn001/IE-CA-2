@@ -158,6 +158,12 @@ public class BalootServerTest {
     }
 
     @Test
+    public void getCommoditiesByPriceStatusWrong() {
+        HttpResponse<String> response = Unirest.get("http://localhost:8080/commodities/search/a/80000").asString();
+        Assert.assertEquals(404, response.getStatus());
+    }
+
+    @Test
     public void getCommoditiesByPriceRangeTest() {
         try {
             Assert.assertEquals(5, baloot.getCommoditiesByPriceRange(10000, 20000).size());
