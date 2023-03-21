@@ -6,8 +6,13 @@ public class Category {
 
     private String categoryName;
 
-    private ArrayList<Integer> commodities = new ArrayList<>();
+    private ArrayList<Integer> commodities;
 
+
+    public Category(String categoryName) {
+        this.categoryName = categoryName;
+        this.commodities = new ArrayList<>();
+    }
 
     public void setCommodities(ArrayList<Integer> commodities) {
         this.commodities = commodities;

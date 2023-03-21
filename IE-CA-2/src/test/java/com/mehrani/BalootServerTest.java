@@ -1,7 +1,6 @@
 package com.mehrani;
 
 import com.mehrani.Baloot.*;
-import com.mehrani.Baloot.Error;
 import com.mehrani.Baloot.Exceptions.ItemAlreadyExistsInBuyListException;
 import com.mehrani.Baloot.Exceptions.ItemNotInBuyListForRemovingException;
 import com.mehrani.Baloot.Exceptions.NegativeCreditAddingException;
@@ -10,17 +9,16 @@ import com.mehrani.InterfaceServer.InterfaceServer;
 import kong.unirest.Unirest;
 import kong.unirest.HttpResponse;
 //import org.apache.http.HttpResponse;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.*;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
 public class BalootServerTest {
+
     private static Baloot baloot;
+
     private static InterfaceServer interfaceServer;
+
 
     @BeforeClass
     public static void setup() {
@@ -177,4 +175,5 @@ public class BalootServerTest {
         User user = new User("saied", "1234", "2001-05-25", "saied@gmail", "s-home", 1000.0);
         baloot.addUser(user);
     }
+
 }

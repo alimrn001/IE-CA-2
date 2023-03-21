@@ -62,8 +62,7 @@ public class Baloot {
             balootCategorySections.get(categoryName).addCommodityToCategory(commodityId);
         }
         else {
-            Category category = new Category();
-            category.setCategoryName(categoryName);
+            Category category = new Category(categoryName);
             category.addCommodityToCategory(commodityId);
             balootCategorySections.put(categoryName, category);
         }

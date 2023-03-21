@@ -27,4 +27,3 @@ com/mehrani/Baloot/Exceptions/ProviderNotExistsException.class
 com/mehrani/Baloot/User.class
 com/mehrani/Baloot/Exceptions/UsernameWrongCharacterException.class
 com/mehrani/InterfaceServer/InterfaceServer$3.class
-com/mehrani/Baloot/Error.class
