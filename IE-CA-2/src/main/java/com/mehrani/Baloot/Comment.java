@@ -119,4 +119,5 @@ public class Comment {
     public int getNeutralVotesNo() {
         return neutralVotesNo;
     }
+
 }

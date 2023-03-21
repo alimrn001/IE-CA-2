@@ -11,6 +11,7 @@ import io.javalin.Javalin;
 import java.io.File;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -493,7 +494,7 @@ public class InterfaceServer {
         commodityData.put("ProviderId", String.valueOf(commodity.getProviderId()));
         commodityData.put("Price", Integer.toString(commodity.getPrice()));
         commodityData.put("Categories", commodity.getCategories().toString());
-        commodityData.put("Rating", Double.toString(commodity.getRating()));
+        commodityData.put("Rating", new DecimalFormat("0.00").format(commodity.getRating()));
         commodityData.put("InStock", Integer.toString(commodity.getInStock()));
         commodityItemHtmlPageStr = htmlHandler.fillTemplatePage(commodityItemHtmlPageStr, commodityData);
 

@@ -86,7 +86,7 @@ public class Commodity {
     }
 
     public void updateUserRating(int previousRating, int newRating) {
-        this.rating += (double)((newRating - previousRating)/numOfRatings);
+        this.rating += ((double)(newRating - previousRating)/numOfRatings);
     }
 
     public void addComment(int commentId) {
