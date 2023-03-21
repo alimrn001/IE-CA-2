@@ -335,6 +335,9 @@ public class InterfaceServer {
                 ctx.html(getHtmlContents("404.html"));
                 ctx.status(404);
             }
+            catch (RatingOutOfRangeException e) {
+                ctx.html(getHtmlContents("FunctionFailed.html"));
+            }
             catch (Exception e) {
                 System.out.println(e.getMessage());
             }
@@ -521,8 +524,10 @@ public class InterfaceServer {
         Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
         Type providerListType = new TypeToken<ArrayList<Provider>>(){}.getType();
         List<Provider> providerList = gson.fromJson(providerDataJsonStr, providerListType);
-        for(Provider provider : providerList)
+        for(Provider provider : providerList) {
+            provider.initializeGsonNullValues();
             baloot.addProvider(provider);
+        }
     }
 
     public void retrieveCommoditiesDataFromAPI(String url) throws Exception {

@@ -15,17 +15,22 @@ public class Provider {
 
     private double avgCommoditiesRate;
 
-    private ArrayList<Integer> commoditiesProvided = new ArrayList<>();
+    private ArrayList<Integer> commoditiesProvided;
 
 
-    public void setData(int id, String name, String registryDate, boolean update) {
-        if(!update) {
-            this.commoditiesNum = 0;
-            this.avgCommoditiesRate = 0;
-        }
+    public Provider(int id, String name, String registryDate) {
         this.id = id;
         this.name = name;
         this.registryDate = LocalDate.parse(registryDate);
+        this.commoditiesNum = 0;
+        this.avgCommoditiesRate = 0;
+        this.commoditiesProvided = new ArrayList<>();
+    }
+
+    public void initializeGsonNullValues() {
+        this.commoditiesNum = 0;
+        this.avgCommoditiesRate = 0;
+        this.commoditiesProvided = new ArrayList<>();
     }
 
     public void setId(int id) {
@@ -84,4 +89,5 @@ public class Provider {
     public ArrayList<Integer> getCommoditiesProvided() {
         return commoditiesProvided;
     }
+
 }
