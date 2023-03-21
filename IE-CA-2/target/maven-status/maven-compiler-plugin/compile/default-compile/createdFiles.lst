@@ -15,7 +15,6 @@ com/mehrani/Baloot/Comment.class
 com/mehrani/Baloot/Exceptions/UserNotExistsException.class
 com/mehrani/Baloot/Category.class
 com/mehrani/Baloot/Exceptions/NotEnoughCreditException.class
-com/mehrani/Baloot/Response.class
 com/mehrani/Baloot/Exceptions/WrongVoteValueException.class
 com/mehrani/Baloot/Exceptions/CommodityNotExistsException.class
 com/mehrani/Main.class

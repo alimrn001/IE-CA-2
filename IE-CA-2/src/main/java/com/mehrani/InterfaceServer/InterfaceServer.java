@@ -20,10 +20,15 @@ import com.google.common.io.Resources;
 import org.apache.commons.io.FileUtils;
 
 public class InterfaceServer {
+
     private Javalin app;
-    private HTTPReqHandler httpReqHandler = new HTTPReqHandler();
-    private HtmlHandler htmlHandler = new HtmlHandler();
-    private Baloot baloot = new Baloot();
+
+    private final HTTPReqHandler httpReqHandler = new HTTPReqHandler();
+
+    private final HtmlHandler htmlHandler = new HtmlHandler();
+
+    private final Baloot baloot = new Baloot();
+
 
     public void start(String usersURL, String ProvidersURL, String CommoditiesURL, String CommentsURL, int port) {
         try {
@@ -535,8 +540,10 @@ public class InterfaceServer {
         Gson gson = new GsonBuilder().create();
         Type commodityListType = new TypeToken<ArrayList<Commodity>>(){}.getType();
         List<Commodity> commodityList = gson.fromJson(commodityDataJsonStr, commodityListType);
-        for(Commodity commodity : commodityList)
+        for(Commodity commodity : commodityList) {
+            commodity.initializeGsonNullValues();
             baloot.addCommodity(commodity);
+        }
     }
 
     public void retrieveCommentsDataFromAPI(String url) throws Exception {

@@ -10,6 +10,7 @@ import java.util.Map;
 
 
 public class Baloot {
+
     private final Map<String, User> balootUsers = new HashMap<>();
 
     private final Map<Integer, Commodity> balootCommodities = new HashMap<>();
@@ -84,8 +85,6 @@ public class Baloot {
     }
 
     public void addCommodity(Commodity commodity) throws Exception {
-        commodity.initializeJsonExcludedFields();
-
         if(!providerExists(commodity.getProviderId()))
             throw new ProviderNotExistsException();
 
@@ -134,8 +133,8 @@ public class Baloot {
             throw new RatingOutOfRangeException();
 
         String ratingPrimaryKey = username + "_" + commodityId;
-        Rating rating = new Rating();
-        rating.setData(username, commodityId, rate);
+        Rating rating = new Rating(username, commodityId, rate);
+
         if(!balootRatings.containsKey(ratingPrimaryKey)) {
             balootCommodities.get(commodityId).addNewRating(rate);
             balootRatings.put(ratingPrimaryKey, rating);

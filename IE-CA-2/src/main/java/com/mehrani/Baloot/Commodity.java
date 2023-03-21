@@ -35,9 +35,9 @@ public class Commodity {
         this.numOfRatings = 1;
     }
 
-    public void initializeJsonExcludedFields() {
-        numOfRatings=1;
-        comments = new ArrayList<>();
+    public void initializeGsonNullValues() {
+        this.numOfRatings = 1;
+        this.comments = new ArrayList<>();
     }
 
     public void setId(int id) {
