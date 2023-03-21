@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.mehrani.Baloot.*;
+import com.mehrani.Baloot.Data.*;
 import com.mehrani.Baloot.Exceptions.*;
 import com.mehrani.HTTPReqHandler.HTTPReqHandler;
 import io.javalin.Javalin;
@@ -45,7 +46,7 @@ public class InterfaceServer {
     }
 
     public void stop() {
-        // stop javalin
+        // stop Javalin
     }
 
     public Baloot getBaloot() {
@@ -404,7 +405,6 @@ public class InterfaceServer {
         String buyListItem = getHtmlContents("userPages/UserBuyListItem.html");
         for(Integer buyListItemId : baloot.getBalootUsers().get(username).getBuyList()) {
             userData = new HashMap<>();
-            //Commodity commodity = baloot.getBalootCommodities().get(buyListItemId);
             Commodity commodity = baloot.getBalootCommodity(buyListItemId);
             userData.put("Username", user.getUsername()); // for removing from buy list we need username to generate url
             userData.put("Id", Integer.toString(commodity.getId()));
@@ -423,7 +423,6 @@ public class InterfaceServer {
         String purchasedListItem = getHtmlContents("userPages/UserPurchasedListItem.html");
         for(Integer purchasedListItemId : baloot.getBalootUsers().get(username).getPurchasedList()) {
             userData = new HashMap<>();
-            //Commodity commodity = baloot.getBalootCommodities().get(purchasedListItemId);
             Commodity commodity = baloot.getBalootCommodity(purchasedListItemId);
             userData.put("Id", Integer.toString(commodity.getId()));
             userData.put("Name", commodity.getName());

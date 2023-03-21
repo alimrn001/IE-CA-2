@@ -1,6 +1,7 @@
 package com.mehrani;
 
 import com.mehrani.Baloot.*;
+import com.mehrani.Baloot.Data.User;
 import com.mehrani.Baloot.Exceptions.ItemAlreadyExistsInBuyListException;
 import com.mehrani.Baloot.Exceptions.ItemNotInBuyListForRemovingException;
 import com.mehrani.Baloot.Exceptions.NegativeCreditAddingException;

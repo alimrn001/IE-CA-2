@@ -1,4 +1,4 @@
-package com.mehrani.Baloot;
+package com.mehrani.Baloot.Data;
 
 import com.google.gson.*;
 
