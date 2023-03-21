@@ -174,8 +174,7 @@ public class BalootServerTest {
     }
 
     public static void addSampleData() throws Exception {
-        User user = new User();
-        user.setUserData("saied", "1234", "2001-05-25", "saied@gmail", "s-home", 1000.0);
+        User user = new User("saied", "1234", "2001-05-25", "saied@gmail", "s-home", 1000.0);
         baloot.addUser(user);
     }
 }

@@ -510,8 +510,10 @@ public class InterfaceServer {
         Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
         Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
         List<User> userList = gson.fromJson(userDataJsonStr, userListType);
-        for (User user : userList)
+        for (User user : userList) {
+            user.initializeGsonNullValues(); // might be removed in upcoming phases
             baloot.addUser(user);
+        }
     }
 
     public void retrieveProvidersDataFromAPI(String url) throws Exception {

@@ -17,24 +17,37 @@ public class User {
 
     private double credit;
 
-    private ArrayList<Integer> buyList = new ArrayList<>();
+    private ArrayList<Integer> buyList;
 
-    private ArrayList<Integer> commentsList = new ArrayList<>();
+    private ArrayList<Integer> commentsList;
 
-    private ArrayList<Integer> purchasedList = new ArrayList<>();
+    private ArrayList<Integer> purchasedList;
 
-    private ArrayList<Integer> likedComments = new ArrayList<>();
+    private ArrayList<Integer> likedComments;
 
-    private ArrayList<Integer> dislikedComments = new ArrayList<>();
+    private ArrayList<Integer> dislikedComments;
 
 
-    public void setUserData(String username, String password, String birthday, String email, String address, double credit) {
+    public User(String username, String password, String birthDate, String email, String address, double credit) {
         this.username = username;
         this.password = password;
-        this.birthDate = LocalDate.parse(birthday);
+        this.birthDate = LocalDate.parse(birthDate);
         this.email = email;
         this.address = address;
         this.credit = credit;
+        buyList = new ArrayList<>();
+        commentsList = new ArrayList<>();
+        purchasedList = new ArrayList<>();
+        likedComments = new ArrayList<>();
+        dislikedComments = new ArrayList<>();
+    }
+
+    public void initializeGsonNullValues() {
+        buyList = new ArrayList<>();
+        commentsList = new ArrayList<>();
+        purchasedList = new ArrayList<>();
+        likedComments = new ArrayList<>();
+        dislikedComments = new ArrayList<>();
     }
 
     public void setUsername(String username) {
@@ -98,8 +111,6 @@ public class User {
     }
 
     public void purchaseBuyList(double purchasePrice) {
-        //you can also consider using a normal loop instead of addAll method
-        //this.purchasedList.addAll(this.buyList); //might want to add a 0 argument in order to append latest purchased at the beginning of the list
         for(Integer buyListItemId : this.buyList)
             purchasedList.add(buyListItemId);
         this.buyList.clear();
@@ -193,4 +204,5 @@ public class User {
     public ArrayList<Integer> getDislikedComments() {
         return dislikedComments;
     }
+
 }
